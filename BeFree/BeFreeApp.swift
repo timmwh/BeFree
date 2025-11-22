@@ -9,9 +9,13 @@ import SwiftUI
 
 @main
 struct BeFreeApp: App {
+    @StateObject private var viewModel = AppViewModel()
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainTabView()
+                .environmentObject(viewModel)
+                .preferredColorScheme(.dark)
         }
     }
 }
