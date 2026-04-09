@@ -64,3 +64,6 @@ iOSInjectionProject/
 # Cursor IDE
 .cursor/
 
+# API Keys (never commit)
+BeFree/Config.swift
+

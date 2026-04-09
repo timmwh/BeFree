@@ -8,24 +8,27 @@
 import Foundation
 
 struct UserProgress: Codable {
-    var selectedModelId: UUID?
+    var selectedModelShortName: String?
     var completedStepIds: [UUID]
     var currentStreak: Int
     var lastCompletedDate: Date?
-    var streakDays: [Date] // Last 7 days of activity
-    
+    var streakDays: [Date]
+    var totalSessionSeconds: Int
+
     init(
-        selectedModelId: UUID? = nil,
+        selectedModelShortName: String? = nil,
         completedStepIds: [UUID] = [],
         currentStreak: Int = 0,
         lastCompletedDate: Date? = nil,
-        streakDays: [Date] = []
+        streakDays: [Date] = [],
+        totalSessionSeconds: Int = 0
     ) {
-        self.selectedModelId = selectedModelId
+        self.selectedModelShortName = selectedModelShortName
         self.completedStepIds = completedStepIds
         self.currentStreak = currentStreak
         self.lastCompletedDate = lastCompletedDate
         self.streakDays = streakDays
+        self.totalSessionSeconds = totalSessionSeconds
     }
 }
 

@@ -17,7 +17,7 @@ struct DashboardView: View {
                 VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
                     // Greeting
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("\(viewModel.greeting()), Tim")
+                        Text(viewModel.greeting())
                             .font(Theme.Typography.largeTitle)
                             .foregroundColor(Theme.Colors.textPrimary)
                         

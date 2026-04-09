@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MainTabView: View {
     @EnvironmentObject var viewModel: AppViewModel
-    
+
     var body: some View {
         TabView {
             DashboardView()
@@ -17,11 +17,17 @@ struct MainTabView: View {
                     Image(systemName: "house.fill")
                     Text("Dashboard")
                 }
-            
+
             RoadmapView()
                 .tabItem {
                     Image(systemName: "map.fill")
                     Text("Roadmap")
+                }
+
+            SettingsView()
+                .tabItem {
+                    Image(systemName: "gearshape.fill")
+                    Text("Settings")
                 }
         }
         .accentColor(Theme.Colors.primaryBlue)
@@ -32,4 +38,3 @@ struct MainTabView: View {
     MainTabView()
         .environmentObject(AppViewModel())
 }
-

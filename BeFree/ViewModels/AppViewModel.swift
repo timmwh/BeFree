@@ -26,20 +26,20 @@ class AppViewModel: ObservableObject {
     // MARK: - Data Loading
     
     private func loadData() {
-        // Load business model (SMMA for MVP)
         let models = dataService.getBusinessModels()
-        if let smma = models.first {
-            businessModel = smma
-            if userProgress.selectedModelId == nil {
-                userProgress.selectedModelId = smma.id
-                saveProgress()
-            }
+        
+        if let shortName = userProgress.selectedModelShortName,
+           let saved = models.first(where: { $0.shortName == shortName }) {
+            businessModel = saved
+        } else if !hasCompletedOnboarding {
+            // Onboarding will set the model — don't auto-select
+            businessModel = nil
+        } else {
+            // Fallback: default to first model
+            businessModel = models.first
         }
         
-        // Load all steps
-        allSteps = dataService.getFoundationSteps() + dataService.getFirstActionsSteps()
-        
-        // Update completion status from saved progress
+        allSteps = dataService.getFoundationSteps(for: businessModel?.shortName ?? "SMMA") + dataService.getFirstActionsSteps()
         updateStepsCompletionStatus()
     }
     
@@ -68,7 +68,7 @@ class AppViewModel: ObservableObject {
     }
     
     var totalStepsCount: Int {
-        return foundationSteps.count + 2 // Foundation + 2 placeholder first actions
+        return foundationSteps.count + firstActionsSteps.count
     }
     
     var progressPercentage: Int {
@@ -84,29 +84,51 @@ class AppViewModel: ObservableObject {
         return persistenceService.getCurrentDayIndex()
     }
     
+    var allBusinessModels: [BusinessModel] {
+        return dataService.getBusinessModels()
+    }
+    
     // MARK: - Actions
     
-    func completeStep(_ step: Step) {
-        // Mark step as completed
+    func completeStep(_ step: Step, sessionSeconds: Int = 0) {
         if !userProgress.completedStepIds.contains(step.id) {
             userProgress.completedStepIds.append(step.id)
         }
         
-        // Update streak
+        if sessionSeconds > 0 {
+            userProgress.totalSessionSeconds += sessionSeconds
+        }
+        
         persistenceService.updateStreak(progress: &userProgress)
         
-        // Update step completion status
         if let index = allSteps.firstIndex(where: { $0.id == step.id }) {
             allSteps[index].isCompleted = true
         }
         
-        // Save progress
+        saveProgress()
+    }
+    
+    func selectModel(_ model: BusinessModel) {
+        businessModel = model
+        userProgress.selectedModelShortName = model.shortName
+        allSteps = dataService.getFoundationSteps(for: model.shortName) + dataService.getFirstActionsSteps()
+        updateStepsCompletionStatus()
         saveProgress()
     }
     
     func completeOnboarding() {
         hasCompletedOnboarding = true
         persistenceService.setOnboardingCompleted(true)
+    }
+
+    func resetProgress() {
+        userProgress.completedStepIds = []
+        userProgress.currentStreak = 0
+        userProgress.lastCompletedDate = nil
+        userProgress.streakDays = []
+        userProgress.totalSessionSeconds = 0
+        updateStepsCompletionStatus()
+        saveProgress()
     }
     
     private func saveProgress() {
@@ -123,4 +145,3 @@ class AppViewModel: ObservableObject {
         return Date().timeOfDayGreeting()
     }
 }
-
