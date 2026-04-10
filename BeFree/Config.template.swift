@@ -10,6 +10,6 @@
 //  Get your API key at: https://platform.openai.com/api-keys
 //
 
-enum Config {
+enum ConfigTemplate {
     static let openAIApiKey = "your-openai-api-key-here"
 }

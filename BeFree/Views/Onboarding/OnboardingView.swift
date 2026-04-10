@@ -17,10 +17,22 @@ struct OnboardingView: View {
 
     enum OnboardingPage {
         case welcome
-        case questionnaire
+        case experienceQuestion
+        case goalQuestion
         case match
         case modelPicker
         case confirmation
+    }
+
+    var progress: Double {
+        switch currentPage {
+        case .welcome:           return 0
+        case .experienceQuestion: return 0.25
+        case .goalQuestion:      return 0.5
+        case .match:             return 0.75
+        case .modelPicker:       return 0.75
+        case .confirmation:      return 1.0
+        }
     }
 
     var recommendedModel: BusinessModel {
@@ -37,88 +49,159 @@ struct OnboardingView: View {
         }
     }
 
+    func goBack() {
+        withAnimation(.easeInOut(duration: 0.3)) {
+            switch currentPage {
+            case .experienceQuestion: currentPage = .welcome
+            case .goalQuestion:       currentPage = .experienceQuestion
+            case .match:              currentPage = .goalQuestion
+            case .modelPicker:        currentPage = .match
+            default: break
+            }
+        }
+    }
+
+    func advance(to page: OnboardingPage) {
+        withAnimation(.easeInOut(duration: 0.3)) {
+            currentPage = page
+        }
+    }
+
     var body: some View {
         ZStack {
             Theme.Colors.background.ignoresSafeArea()
 
-            switch currentPage {
-            case .welcome:
-                WelcomePageView {
-                    withAnimation(.easeInOut(duration: 0.4)) {
-                        currentPage = .questionnaire
-                    }
+            VStack(spacing: 0) {
+                // Progress bar (hidden on welcome)
+                if currentPage != .welcome {
+                    OnboardingProgressBar(progress: progress)
+                        .padding(.top, 56) // below status bar
                 }
-                .transition(.asymmetric(
-                    insertion: .move(edge: .trailing),
-                    removal: .move(edge: .leading)
-                ))
 
-            case .questionnaire:
-                QuestionnairePageView(
-                    selectedExperience: $selectedExperience,
-                    selectedGoal: $selectedGoal,
-                    onContinue: {
-                        viewModel.selectModel(recommendedModel)
-                        withAnimation(.easeInOut(duration: 0.4)) {
-                            currentPage = .match
-                        }
+                // Back button row (shown on question + match screens)
+                if [.experienceQuestion, .goalQuestion, .match, .modelPicker].contains(currentPage) {
+                    HStack {
+                        OnboardingBackButton(action: goBack)
+                        Spacer()
                     }
-                )
-                .transition(.asymmetric(
-                    insertion: .move(edge: .trailing),
-                    removal: .move(edge: .leading)
-                ))
+                    .padding(.horizontal, Theme.Spacing.lg)
+                    .padding(.top, Theme.Spacing.sm)
+                }
 
-            case .match:
-                MatchPageView(
-                    model: recommendedModel,
-                    onAccept: {
-                        withAnimation(.easeInOut(duration: 0.4)) {
-                            currentPage = .confirmation
-                        }
-                    },
-                    onSeeAll: {
-                        withAnimation(.easeInOut(duration: 0.4)) {
-                            currentPage = .modelPicker
-                        }
+                // Page content
+                switch currentPage {
+                case .welcome:
+                    WelcomePageView {
+                        advance(to: .experienceQuestion)
                     }
-                )
-                .transition(.asymmetric(
-                    insertion: .move(edge: .trailing),
-                    removal: .move(edge: .leading)
-                ))
+                    .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
 
-            case .modelPicker:
-                ModelPickerPageView(
-                    models: viewModel.allBusinessModels,
-                    selectedModel: viewModel.businessModel ?? recommendedModel,
-                    onSelect: { model in
-                        viewModel.selectModel(model)
-                    },
-                    onContinue: {
-                        withAnimation(.easeInOut(duration: 0.4)) {
-                            currentPage = .confirmation
-                        }
-                    }
-                )
-                .transition(.asymmetric(
-                    insertion: .move(edge: .trailing),
-                    removal: .move(edge: .leading)
-                ))
+                case .experienceQuestion:
+                    ExperienceQuestionView(
+                        selected: $selectedExperience,
+                        onContinue: { advance(to: .goalQuestion) }
+                    )
+                    .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
 
-            case .confirmation:
-                ConfirmationPageView(
-                    model: viewModel.businessModel ?? recommendedModel,
-                    onBegin: {
-                        viewModel.completeOnboarding()
-                    }
-                )
-                .transition(.asymmetric(
-                    insertion: .move(edge: .trailing),
-                    removal: .move(edge: .leading)
-                ))
+                case .goalQuestion:
+                    GoalQuestionView(
+                        selected: $selectedGoal,
+                        onContinue: {
+                            viewModel.selectModel(recommendedModel)
+                            advance(to: .match)
+                        }
+                    )
+                    .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
+
+                case .match:
+                    MatchPageView(
+                        model: recommendedModel,
+                        onAccept: { advance(to: .confirmation) },
+                        onSeeAll: { advance(to: .modelPicker) }
+                    )
+                    .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
+
+                case .modelPicker:
+                    ModelPickerPageView(
+                        models: viewModel.allBusinessModels,
+                        selectedModel: viewModel.businessModel ?? recommendedModel,
+                        onSelect: { viewModel.selectModel($0) },
+                        onContinue: { advance(to: .confirmation) }
+                    )
+                    .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
+
+                case .confirmation:
+                    ConfirmationPageView(
+                        model: viewModel.businessModel ?? recommendedModel,
+                        onBegin: { viewModel.completeOnboarding() }
+                    )
+                    .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
+                }
             }
         }
+    }
+}
+
+// MARK: - Shared Components
+
+struct OnboardingProgressBar: View {
+    let progress: Double
+
+    var body: some View {
+        GeometryReader { geo in
+            ZStack(alignment: .leading) {
+                Rectangle()
+                    .fill(Theme.Colors.border)
+                Rectangle()
+                    .fill(Theme.Colors.primaryBlue)
+                    .frame(width: max(0, geo.size.width * progress))
+                    .animation(.easeInOut(duration: 0.3), value: progress)
+            }
+        }
+        .frame(height: 3)
+    }
+}
+
+struct OnboardingBackButton: View {
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: "chevron.left")
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundColor(Theme.Colors.textPrimary)
+                .frame(width: 44, height: 44)
+        }
+    }
+}
+
+struct OnboardingContinueButton: View {
+    let title: String
+    var isEnabled: Bool = true
+    let action: () -> Void
+
+    init(_ title: String, isEnabled: Bool = true, action: @escaping () -> Void) {
+        self.title = title
+        self.isEnabled = isEnabled
+        self.action = action
+    }
+
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(Theme.Typography.bodySemiBold)
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .frame(height: 52)
+                .background(isEnabled ? Theme.Colors.primaryBlue : Theme.Colors.cardBackground)
+                .cornerRadius(26)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 26)
+                        .stroke(isEnabled ? Color.clear : Theme.Colors.border, lineWidth: 1)
+                )
+        }
+        .disabled(!isEnabled)
+        .animation(.easeInOut(duration: 0.15), value: isEnabled)
     }
 }
 
@@ -129,41 +212,25 @@ enum ExperienceLevel: String, CaseIterable {
     case tried = "Tried a few things"
     case experienced = "I have experience"
 
-    var icon: String {
-        switch self {
-        case .beginner: return "1.circle"
-        case .tried: return "2.circle"
-        case .experienced: return "3.circle"
-        }
-    }
-
     var subtitle: String {
         switch self {
-        case .beginner: return "Starting completely from zero"
-        case .tried: return "Explored but haven't succeeded yet"
+        case .beginner:    return "Starting completely from zero"
+        case .tried:       return "Explored but haven't succeeded yet"
         case .experienced: return "Ready to scale what I know"
         }
     }
 }
 
 enum BusinessGoal: String, CaseIterable {
-    case sideIncome = "Earn extra income"
+    case sideIncome   = "Earn extra income"
     case fullBusiness = "Build a full-time business"
-    case replaceJob = "Replace my current job"
-
-    var icon: String {
-        switch self {
-        case .sideIncome: return "dollarsign.circle"
-        case .fullBusiness: return "building.2"
-        case .replaceJob: return "arrow.up.forward.circle"
-        }
-    }
+    case replaceJob   = "Replace my current job"
 
     var subtitle: String {
         switch self {
-        case .sideIncome: return "On the side of what I already do"
+        case .sideIncome:   return "On the side of what I already do"
         case .fullBusiness: return "Make this my primary focus"
-        case .replaceJob: return "Go all-in and quit my job"
+        case .replaceJob:   return "Go all-in and quit my job"
         }
     }
 }
@@ -184,22 +251,21 @@ private struct WelcomePageView: View {
                     .font(.system(size: 36, weight: .medium))
                     .foregroundColor(.white)
             }
-            .frame(width: 88, height: 88)
-            .cornerRadius(Theme.CornerRadius.xl)
+            .frame(width: 80, height: 80)
+            .cornerRadius(22)
             .primaryGlow()
 
-            Spacer().frame(height: Theme.Spacing.xl)
+            Spacer().frame(height: 28)
 
-            // App name
             Text("BeFree")
-                .font(.custom("Inter", size: 48).weight(.semibold))
+                .font(.custom("Inter", size: 44).weight(.semibold))
                 .foregroundColor(Theme.Colors.textPrimary)
                 .tracking(-1)
 
             Spacer().frame(height: Theme.Spacing.md)
 
             Text("Build your online business.")
-                .font(Theme.Typography.heading2)
+                .font(.custom("Inter", size: 22).weight(.semibold))
                 .foregroundColor(Theme.Colors.textPrimary)
                 .multilineTextAlignment(.center)
 
@@ -213,153 +279,116 @@ private struct WelcomePageView: View {
 
             Spacer()
 
-            // Features list
-            VStack(spacing: Theme.Spacing.sm) {
-                WelcomeFeatureRow(icon: "map.fill", text: "A proven step-by-step roadmap")
-                WelcomeFeatureRow(icon: "timer", text: "Guided daily sessions with a timer")
-                WelcomeFeatureRow(icon: "flame.fill", text: "Streak tracking to keep you going")
-            }
-            .padding(.horizontal, Theme.Spacing.lg)
-
-            Spacer().frame(height: Theme.Spacing.xxxl)
-
-            // CTA
-            GradientButton("Get Started", icon: "arrow.right") {
+            OnboardingContinueButton("Get Started") {
                 onGetStarted()
             }
             .padding(.horizontal, Theme.Spacing.lg)
-
-            Spacer().frame(height: Theme.Spacing.xl)
+            .padding(.bottom, Theme.Spacing.xxxl)
         }
-        .padding(.horizontal, Theme.Spacing.lg)
     }
 }
 
-private struct WelcomeFeatureRow: View {
-    let icon: String
-    let text: String
+// MARK: - Experience Question Screen
 
-    var body: some View {
-        HStack(spacing: Theme.Spacing.md) {
-            IconContainer(icon: icon, size: .medium, style: .blue)
-            Text(text)
-                .font(Theme.Typography.body)
-                .foregroundColor(Theme.Colors.textPrimaryOpacity)
-            Spacer()
-            Image(systemName: "checkmark.circle.fill")
-                .font(.system(size: 20))
-                .foregroundColor(Theme.Colors.primaryBlue)
-        }
-        .padding(.horizontal, Theme.Spacing.xl)
-        .padding(.vertical, Theme.Spacing.lg)
-        .background(Theme.Colors.cardBackground)
-        .cornerRadius(Theme.CornerRadius.md)
-        .overlay(
-            RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
-                .stroke(Theme.Colors.divider, lineWidth: 0.633)
-        )
-    }
-}
-
-// MARK: - Questionnaire Page
-
-private struct QuestionnairePageView: View {
-    @Binding var selectedExperience: ExperienceLevel?
-    @Binding var selectedGoal: BusinessGoal?
+private struct ExperienceQuestionView: View {
+    @Binding var selected: ExperienceLevel?
     let onContinue: () -> Void
-
-    var canContinue: Bool {
-        selectedExperience != nil && selectedGoal != nil
-    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Header
+            // Question
             VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-                BadgeChip("Step 1 of 2", variant: .statusPrimary)
-                    .padding(.top, Theme.Spacing.xxxl)
-
-                Text("A few quick\nquestions")
-                    .font(Theme.Typography.heading1)
+                Text("What's your\nstarting point?")
+                    .font(.custom("Inter", size: 30).weight(.bold))
                     .foregroundColor(Theme.Colors.textPrimary)
                     .lineSpacing(2)
 
-                Text("We'll use these to personalize your path.")
+                Text("This helps us personalize your roadmap.")
                     .font(Theme.Typography.body)
                     .foregroundColor(Theme.Colors.textSecondary)
             }
             .padding(.horizontal, Theme.Spacing.lg)
+            .padding(.top, Theme.Spacing.lg)
 
-            Spacer().frame(height: Theme.Spacing.xxxl)
+            Spacer().frame(height: Theme.Spacing.xxl)
 
-            ScrollView {
-                VStack(alignment: .leading, spacing: Theme.Spacing.xl) {
-                    // Q1
-                    VStack(alignment: .leading, spacing: Theme.Spacing.md) {
-                        Text("What's your starting point?")
-                            .font(Theme.Typography.bodySemiBold)
-                            .foregroundColor(Theme.Colors.textPrimary)
-                            .padding(.horizontal, Theme.Spacing.lg)
-
-                        VStack(spacing: Theme.Spacing.sm) {
-                            ForEach(ExperienceLevel.allCases, id: \.self) { level in
-                                OnboardingOptionCard(
-                                    icon: level.icon,
-                                    title: level.rawValue,
-                                    subtitle: level.subtitle,
-                                    isSelected: selectedExperience == level
-                                ) {
-                                    withAnimation(.easeInOut(duration: 0.15)) {
-                                        selectedExperience = level
-                                    }
-                                }
-                            }
-                        }
-                        .padding(.horizontal, Theme.Spacing.lg)
+            // Options
+            VStack(spacing: Theme.Spacing.sm) {
+                ForEach(ExperienceLevel.allCases, id: \.self) { level in
+                    OnboardingOptionCard(
+                        title: level.rawValue,
+                        subtitle: level.subtitle,
+                        isSelected: selected == level
+                    ) {
+                        withAnimation(.easeInOut(duration: 0.15)) { selected = level }
                     }
-
-                    // Q2
-                    VStack(alignment: .leading, spacing: Theme.Spacing.md) {
-                        Text("What's your primary goal?")
-                            .font(Theme.Typography.bodySemiBold)
-                            .foregroundColor(Theme.Colors.textPrimary)
-                            .padding(.horizontal, Theme.Spacing.lg)
-
-                        VStack(spacing: Theme.Spacing.sm) {
-                            ForEach(BusinessGoal.allCases, id: \.self) { goal in
-                                OnboardingOptionCard(
-                                    icon: goal.icon,
-                                    title: goal.rawValue,
-                                    subtitle: goal.subtitle,
-                                    isSelected: selectedGoal == goal
-                                ) {
-                                    withAnimation(.easeInOut(duration: 0.15)) {
-                                        selectedGoal = goal
-                                    }
-                                }
-                            }
-                        }
-                        .padding(.horizontal, Theme.Spacing.lg)
-                    }
-
-                    Spacer().frame(height: Theme.Spacing.xl)
                 }
             }
+            .padding(.horizontal, Theme.Spacing.lg)
 
-            // Continue button
-            GradientButton("Continue", icon: "arrow.right", isEnabled: canContinue) {
+            Spacer()
+
+            OnboardingContinueButton("Continue", isEnabled: selected != nil) {
                 onContinue()
             }
             .padding(.horizontal, Theme.Spacing.lg)
-            .padding(.bottom, Theme.Spacing.xl)
+            .padding(.bottom, Theme.Spacing.xxxl)
         }
     }
 }
 
-// MARK: - Option Card
+// MARK: - Goal Question Screen
+
+private struct GoalQuestionView: View {
+    @Binding var selected: BusinessGoal?
+    let onContinue: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            // Question
+            VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                Text("What's your\nprimary goal?")
+                    .font(.custom("Inter", size: 30).weight(.bold))
+                    .foregroundColor(Theme.Colors.textPrimary)
+                    .lineSpacing(2)
+
+                Text("We'll recommend the best path for you.")
+                    .font(Theme.Typography.body)
+                    .foregroundColor(Theme.Colors.textSecondary)
+            }
+            .padding(.horizontal, Theme.Spacing.lg)
+            .padding(.top, Theme.Spacing.lg)
+
+            Spacer().frame(height: Theme.Spacing.xxl)
+
+            // Options
+            VStack(spacing: Theme.Spacing.sm) {
+                ForEach(BusinessGoal.allCases, id: \.self) { goal in
+                    OnboardingOptionCard(
+                        title: goal.rawValue,
+                        subtitle: goal.subtitle,
+                        isSelected: selected == goal
+                    ) {
+                        withAnimation(.easeInOut(duration: 0.15)) { selected = goal }
+                    }
+                }
+            }
+            .padding(.horizontal, Theme.Spacing.lg)
+
+            Spacer()
+
+            OnboardingContinueButton("Continue", isEnabled: selected != nil) {
+                onContinue()
+            }
+            .padding(.horizontal, Theme.Spacing.lg)
+            .padding(.bottom, Theme.Spacing.xxxl)
+        }
+    }
+}
+
+// MARK: - Option Card (Cal AI style)
 
 private struct OnboardingOptionCard: View {
-    let icon: String
     let title: String
     let subtitle: String
     let isSelected: Bool
@@ -368,19 +397,13 @@ private struct OnboardingOptionCard: View {
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: Theme.Spacing.md) {
-                IconContainer(
-                    icon: icon,
-                    size: .medium,
-                    style: isSelected ? .blueGradient : .blue
-                )
-
-                VStack(alignment: .leading, spacing: 2) {
+                VStack(alignment: .leading, spacing: 3) {
                     Text(title)
                         .font(Theme.Typography.bodyMedium)
-                        .foregroundColor(Theme.Colors.textPrimary)
+                        .foregroundColor(isSelected ? .white : Theme.Colors.textPrimary)
                     Text(subtitle)
                         .font(Theme.Typography.caption)
-                        .foregroundColor(Theme.Colors.textSecondary)
+                        .foregroundColor(isSelected ? .white.opacity(0.75) : Theme.Colors.textSecondary)
                 }
 
                 Spacer()
@@ -388,22 +411,16 @@ private struct OnboardingOptionCard: View {
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.system(size: 22))
-                        .foregroundColor(Theme.Colors.primaryBlue)
-                } else {
-                    Circle()
-                        .stroke(Theme.Colors.border, lineWidth: 1.5)
-                        .frame(width: 22, height: 22)
+                        .foregroundColor(.white)
                 }
             }
-            .padding(Theme.Spacing.lg)
-            .background(isSelected ? Theme.Colors.primaryBlueOpacity : Theme.Colors.cardBackground)
+            .padding(.horizontal, Theme.Spacing.lg)
+            .padding(.vertical, 18)
+            .background(isSelected ? Theme.Colors.primaryBlue : Theme.Colors.cardBackground)
             .cornerRadius(Theme.CornerRadius.md)
             .overlay(
                 RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
-                    .stroke(
-                        isSelected ? Theme.Colors.primaryBlue.opacity(0.5) : Theme.Colors.divider,
-                        lineWidth: isSelected ? 1 : 0.633
-                    )
+                    .stroke(isSelected ? Color.clear : Theme.Colors.border, lineWidth: 0.633)
             )
         }
     }
@@ -417,83 +434,80 @@ private struct MatchPageView: View {
     let onSeeAll: () -> Void
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 0) {
-                // Header
-                VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-                    BadgeChip("Step 2 of 2", variant: .statusPrimary)
-                        .padding(.top, Theme.Spacing.xxxl)
+        VStack(alignment: .leading, spacing: 0) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 0) {
+                    // Header
+                    VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                        Text("Your perfect\nmatch")
+                            .font(.custom("Inter", size: 30).weight(.bold))
+                            .foregroundColor(Theme.Colors.textPrimary)
+                            .lineSpacing(2)
 
-                    Text("Your perfect\nmatch")
-                        .font(Theme.Typography.heading1)
-                        .foregroundColor(Theme.Colors.textPrimary)
-                        .lineSpacing(2)
+                        Text("Based on your answers, we recommend:")
+                            .font(Theme.Typography.body)
+                            .foregroundColor(Theme.Colors.textSecondary)
+                    }
+                    .padding(.horizontal, Theme.Spacing.lg)
+                    .padding(.top, Theme.Spacing.lg)
 
-                    Text("Based on your answers, we recommend:")
-                        .font(Theme.Typography.body)
-                        .foregroundColor(Theme.Colors.textSecondary)
-                }
-                .padding(.horizontal, Theme.Spacing.lg)
+                    Spacer().frame(height: Theme.Spacing.xxl)
 
-                Spacer().frame(height: Theme.Spacing.xxl)
+                    // Model card
+                    VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
+                        HStack(spacing: Theme.Spacing.md) {
+                            IconContainer(icon: model.icon, size: .large, style: .blueGradient)
 
-                // Model card
-                VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
-                    // Model header
-                    HStack(spacing: Theme.Spacing.md) {
-                        IconContainer(icon: model.icon, size: .large, style: .blueGradient)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(model.shortName)
+                                    .font(Theme.Typography.caption)
+                                    .foregroundColor(Theme.Colors.primaryBlue)
+                                    .tracking(1)
+                                    .textCase(.uppercase)
+                                Text(model.name)
+                                    .font(Theme.Typography.bodySemiBold)
+                                    .foregroundColor(Theme.Colors.textPrimary)
+                            }
+                        }
 
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(model.shortName)
-                                .font(Theme.Typography.caption)
-                                .foregroundColor(Theme.Colors.primaryBlue)
-                                .tracking(1)
-                                .textCase(.uppercase)
+                        Text(model.description)
+                            .font(Theme.Typography.body)
+                            .foregroundColor(Theme.Colors.textSecondary)
+                            .lineSpacing(4)
 
-                            Text(model.name)
-                                .font(Theme.Typography.bodySemiBold)
-                                .foregroundColor(Theme.Colors.textPrimary)
+                        VStack(spacing: Theme.Spacing.sm) {
+                            ForEach(model.benefits, id: \.self) { benefit in
+                                BenefitCard(icon: benefitIcon(for: benefit), title: benefit)
+                            }
                         }
                     }
+                    .padding(Theme.Spacing.lg)
+                    .background(Theme.Colors.cardBackground)
+                    .cornerRadius(Theme.CornerRadius.xl)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: Theme.CornerRadius.xl)
+                            .stroke(Theme.Colors.divider, lineWidth: 0.633)
+                    )
+                    .padding(.horizontal, Theme.Spacing.lg)
 
-                    Text(model.description)
-                        .font(Theme.Typography.body)
-                        .foregroundColor(Theme.Colors.textSecondary)
-                        .lineSpacing(4)
-
-                    // Benefits
-                    VStack(spacing: Theme.Spacing.sm) {
-                        ForEach(model.benefits, id: \.self) { benefit in
-                            BenefitCard(icon: benefitIcon(for: benefit), title: benefit)
-                        }
-                    }
+                    Spacer().frame(height: Theme.Spacing.xl)
                 }
-                .padding(Theme.Spacing.lg)
-                .background(Theme.Colors.cardBackground)
-                .cornerRadius(Theme.CornerRadius.xl)
-                .overlay(
-                    RoundedRectangle(cornerRadius: Theme.CornerRadius.xl)
-                        .stroke(Theme.Colors.divider, lineWidth: 0.633)
-                )
-                .padding(.horizontal, Theme.Spacing.lg)
-
-                Spacer().frame(height: Theme.Spacing.xxxl)
-
-                // CTAs
-                VStack(spacing: Theme.Spacing.md) {
-                    GradientButton("Start with \(model.shortName)") {
-                        onAccept()
-                    }
-
-                    Button("See all models") {
-                        onSeeAll()
-                    }
-                    .font(Theme.Typography.body)
-                    .foregroundColor(Theme.Colors.textSecondary)
-                }
-                .padding(.horizontal, Theme.Spacing.lg)
-                .padding(.bottom, Theme.Spacing.xl)
             }
+
+            // Fixed bottom buttons
+            VStack(spacing: Theme.Spacing.md) {
+                OnboardingContinueButton("Start with \(model.shortName)") {
+                    onAccept()
+                }
+
+                Button("See all models") {
+                    onSeeAll()
+                }
+                .font(Theme.Typography.body)
+                .foregroundColor(Theme.Colors.textSecondary)
+            }
+            .padding(.horizontal, Theme.Spacing.lg)
+            .padding(.bottom, Theme.Spacing.xxxl)
         }
     }
 
@@ -522,21 +536,19 @@ private struct ModelPickerPageView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Header
             VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
                 Text("Choose your path")
-                    .font(Theme.Typography.heading1)
+                    .font(.custom("Inter", size: 30).weight(.bold))
                     .foregroundColor(Theme.Colors.textPrimary)
-                    .padding(.top, Theme.Spacing.xxxl)
 
-                Text("All paths share the same Foundation. Pick the model that excites you.")
+                Text("All paths share the same Foundation.")
                     .font(Theme.Typography.body)
                     .foregroundColor(Theme.Colors.textSecondary)
-                    .lineSpacing(4)
             }
             .padding(.horizontal, Theme.Spacing.lg)
+            .padding(.top, Theme.Spacing.lg)
 
-            Spacer().frame(height: Theme.Spacing.xxl)
+            Spacer().frame(height: Theme.Spacing.xl)
 
             ScrollView {
                 VStack(spacing: Theme.Spacing.md) {
@@ -547,16 +559,16 @@ private struct ModelPickerPageView: View {
                             onSelect: { onSelect(model) }
                         )
                     }
-                    Spacer().frame(height: Theme.Spacing.xl)
+                    Spacer().frame(height: Theme.Spacing.md)
                 }
                 .padding(.horizontal, Theme.Spacing.lg)
             }
 
-            GradientButton("Continue with \(selectedModel.shortName)") {
+            OnboardingContinueButton("Continue with \(selectedModel.shortName)") {
                 onContinue()
             }
             .padding(.horizontal, Theme.Spacing.lg)
-            .padding(.bottom, Theme.Spacing.xl)
+            .padding(.bottom, Theme.Spacing.xxxl)
         }
     }
 }
@@ -570,11 +582,7 @@ private struct ModelPickerCard: View {
         Button(action: onSelect) {
             VStack(alignment: .leading, spacing: Theme.Spacing.md) {
                 HStack(spacing: Theme.Spacing.md) {
-                    IconContainer(
-                        icon: model.icon,
-                        size: .large,
-                        style: isSelected ? .blueGradient : .blue
-                    )
+                    IconContainer(icon: model.icon, size: .large, style: isSelected ? .blueGradient : .blue)
 
                     VStack(alignment: .leading, spacing: 2) {
                         Text(model.shortName)
@@ -630,21 +638,20 @@ private struct ConfirmationPageView: View {
         VStack(spacing: 0) {
             Spacer()
 
-            // Success icon
             ZStack {
                 Theme.Colors.successBg
                 Image(systemName: "checkmark")
-                    .font(.system(size: 36, weight: .semibold))
+                    .font(.system(size: 32, weight: .semibold))
                     .foregroundColor(Theme.Colors.success)
             }
-            .frame(width: 88, height: 88)
-            .cornerRadius(Theme.CornerRadius.xl)
+            .frame(width: 80, height: 80)
+            .cornerRadius(22)
             .shadow(color: Theme.Colors.success.opacity(0.3), radius: 24, x: 0, y: 0)
 
             Spacer().frame(height: Theme.Spacing.xl)
 
             Text("You're ready.")
-                .font(.custom("Inter", size: 40).weight(.semibold))
+                .font(.custom("Inter", size: 36).weight(.semibold))
                 .foregroundColor(Theme.Colors.textPrimary)
                 .tracking(-0.5)
 
@@ -656,7 +663,6 @@ private struct ConfirmationPageView: View {
 
             Spacer().frame(height: Theme.Spacing.xxxl)
 
-            // Selected model summary
             HStack(spacing: Theme.Spacing.md) {
                 IconContainer(icon: model.icon, size: .medium, style: .blueGradient)
 
@@ -682,11 +688,11 @@ private struct ConfirmationPageView: View {
 
             Spacer()
 
-            GradientButton("Begin My Journey", icon: "sparkles") {
+            OnboardingContinueButton("Begin My Journey") {
                 onBegin()
             }
             .padding(.horizontal, Theme.Spacing.lg)
-            .padding(.bottom, Theme.Spacing.xl)
+            .padding(.bottom, Theme.Spacing.xxxl)
         }
     }
 }
