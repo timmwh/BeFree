@@ -29,30 +29,78 @@ struct StepDetailView: View {
                             .foregroundColor(Theme.Colors.textPrimary)
                     }
 
-                    // Description — first paragraph only
-                    Text(step.description.components(separatedBy: "\n\n").first ?? step.description)
-                        .font(Theme.Typography.body)
-                        .foregroundColor(Theme.Colors.textSecondary)
-                        .lineSpacing(4)
+                    // YouTube Video
+                    YouTubePlayerView(videoId: step.videoId)
+                        .aspectRatio(16/9, contentMode: .fit)
+                        .cornerRadius(Theme.CornerRadius.sm)
 
-                    // Single recommended resource
-                    if let resource = step.resources.first {
+                    // Watch Notes
+                    if !step.watchNotes.isEmpty {
                         VStack(alignment: .leading, spacing: Theme.Spacing.md) {
-                            HStack(spacing: Theme.Spacing.xs) {
-                                Image(systemName: "star.fill")
-                                    .font(.system(size: 12))
-                                    .foregroundColor(Theme.Colors.primaryBlue)
-                                Text("Recommended")
-                                    .font(Theme.Typography.caption)
-                                    .foregroundColor(Theme.Colors.primaryBlue)
-                                    .tracking(0.5)
-                                    .textCase(.uppercase)
+                            SectionLabel(icon: "eye.fill", title: "While watching")
+
+                            VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                                ForEach(step.watchNotes, id: \.self) { note in
+                                    HStack(alignment: .top, spacing: Theme.Spacing.sm) {
+                                        Circle()
+                                            .fill(Theme.Colors.primaryBlue)
+                                            .frame(width: 6, height: 6)
+                                            .padding(.top, 7)
+                                        Text(note)
+                                            .font(Theme.Typography.body)
+                                            .foregroundColor(Theme.Colors.textSecondary)
+                                            .lineSpacing(3)
+                                    }
+                                }
                             }
-                            ResourceCard(resource: resource)
                         }
+                        .padding(Theme.Spacing.lg)
+                        .background(Theme.Colors.cardBackground)
+                        .cornerRadius(Theme.CornerRadius.md)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
+                                .stroke(Theme.Colors.divider, lineWidth: 0.633)
+                        )
                     }
 
-                    // AI Coach button
+                    // Your Task
+                    VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+                        SectionLabel(icon: "checkmark.circle.fill", title: "Your Task")
+
+                        Text(step.description)
+                            .font(Theme.Typography.body)
+                            .foregroundColor(Theme.Colors.textPrimary)
+                            .lineSpacing(4)
+                    }
+                    .padding(Theme.Spacing.lg)
+                    .background(Theme.Colors.cardBackground)
+                    .cornerRadius(Theme.CornerRadius.md)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
+                            .stroke(Theme.Colors.divider, lineWidth: 0.633)
+                    )
+
+                    // Expected Output
+                    if !step.expectedOutput.isEmpty {
+                        VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+                            SectionLabel(icon: "doc.text.fill", title: "Expected Output")
+
+                            Text(step.expectedOutput)
+                                .font(Theme.Typography.body)
+                                .foregroundColor(Theme.Colors.textSecondary)
+                                .lineSpacing(3)
+                                .italic()
+                        }
+                        .padding(Theme.Spacing.lg)
+                        .background(Theme.Colors.cardBackground)
+                        .cornerRadius(Theme.CornerRadius.md)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
+                                .stroke(Theme.Colors.divider, lineWidth: 0.633)
+                        )
+                    }
+
+                    // AI Coach
                     Button(action: { showCoachSheet = true }) {
                         HStack(spacing: Theme.Spacing.md) {
                             ZStack {
@@ -147,9 +195,29 @@ struct StepDetailView: View {
     }
 }
 
+// MARK: - Section Label
+
+private struct SectionLabel: View {
+    let icon: String
+    let title: String
+
+    var body: some View {
+        HStack(spacing: Theme.Spacing.xs) {
+            Image(systemName: icon)
+                .font(.system(size: 12))
+                .foregroundColor(Theme.Colors.primaryBlue)
+            Text(title)
+                .font(Theme.Typography.caption)
+                .foregroundColor(Theme.Colors.primaryBlue)
+                .tracking(0.5)
+                .textCase(.uppercase)
+        }
+    }
+}
+
 #Preview {
     NavigationStack {
-        StepDetailView(step: DataService.shared.getFoundationSteps(for: "SMMA")[0])
+        StepDetailView(step: DataService.shared.getFoundationSteps(for: "AAA")[0])
             .environmentObject(AppViewModel())
     }
 }

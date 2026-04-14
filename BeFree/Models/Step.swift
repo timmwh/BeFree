@@ -13,7 +13,6 @@ enum Phase: String, Codable {
     case growth = "Growth"
     case advanced = "Advanced"
     
-    /// Maps Phase to BusinessPhase for UI components
     var toBusinessPhase: BusinessPhase {
         switch self {
         case .foundation:
@@ -32,8 +31,11 @@ struct Step: Identifiable, Codable {
     let id: UUID
     let title: String
     let description: String
-    let duration: Int // in minutes
+    let duration: Int
     let phase: Phase
+    let videoId: String
+    let watchNotes: [String]
+    let expectedOutput: String
     let subtasks: [String]
     let resources: [Resource]
     var isCompleted: Bool
@@ -44,8 +46,11 @@ struct Step: Identifiable, Codable {
         description: String,
         duration: Int,
         phase: Phase,
-        subtasks: [String],
-        resources: [Resource],
+        videoId: String = "",
+        watchNotes: [String] = [],
+        expectedOutput: String = "",
+        subtasks: [String] = [],
+        resources: [Resource] = [],
         isCompleted: Bool = false
     ) {
         self.id = id
@@ -53,9 +58,11 @@ struct Step: Identifiable, Codable {
         self.description = description
         self.duration = duration
         self.phase = phase
+        self.videoId = videoId
+        self.watchNotes = watchNotes
+        self.expectedOutput = expectedOutput
         self.subtasks = subtasks
         self.resources = resources
         self.isCompleted = isCompleted
     }
 }
-

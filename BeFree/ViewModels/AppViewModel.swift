@@ -39,7 +39,7 @@ class AppViewModel: ObservableObject {
             businessModel = models.first
         }
         
-        allSteps = dataService.getFoundationSteps(for: businessModel?.shortName ?? "SMMA") + dataService.getFirstActionsSteps()
+        allSteps = dataService.getFoundationSteps(for: businessModel?.shortName ?? "AAA") + dataService.getFirstActionsSteps()
         updateStepsCompletionStatus()
     }
     
