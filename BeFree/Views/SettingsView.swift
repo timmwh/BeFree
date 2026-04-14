@@ -236,7 +236,7 @@ struct ModelSwitcherSheet: View {
                     Text("Switch Model")
                         .font(Theme.Typography.bodySemiBold)
                         .foregroundColor(Theme.Colors.textPrimary)
-                    Text("Your Foundation progress carries over.")
+                    Text("Foundation progress is tracked separately per model.")
                         .font(Theme.Typography.caption)
                         .foregroundColor(Theme.Colors.textSecondary)
                 }

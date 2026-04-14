@@ -1,5 +1,7 @@
 BeFree – Product Vision & MVP Scope
 
+**Document convention:** Text in squiggly brackets {like this} marks ideas or requirements that are not final — they still need product/design evaluation before we commit to them.
+
 BeFree is Duolingo for online business.
 
 The knowledge to build a profitable online business is free — it's on YouTube, in blog posts, in Reddit threads. The problem isn't access to knowledge. The problem is that nobody tells you which video to watch first, what to do immediately after, and how to keep going the next day.
@@ -43,7 +45,7 @@ Open app → Watch the right video → Do the one task → Mark done → Come ba
 
 The user should never have to ask "what should I do next?" The answer is always one tap away.
 
-The MVP covers the first 10 foundational steps of building an agency-style online business, with content tailored to the user's chosen model. Each step is one video + one action. Nothing more.
+The MVP focuses on **foundational steps to get started** with the chosen business model — structured as video + task, with content tailored to that model (including a dedicated Foundation track per model, plus follow-on steps where we already guide first real-world actions). It is intentionally **not** a narrow "exactly N steps and nothing else" spec; scope stays execution-first.
 
 The user should feel:
 	•	"I don't need to research anything — someone already found the best video."
@@ -63,7 +65,7 @@ The MVP launches with 2 business models:
 	•	AAA (AI Automation Agency) — the highest-growth B2B model in 2026, appeals to tech-forward users who want to build a premium service business
 	•	TikTok Shop Affiliate — the fastest-growing consumer income model in 2026, zero startup capital, first commission possible within days
 
-These two models were selected based on deep market research (April 2026): both are in their demand peak, both have strong YouTube educator communities, and they serve two distinct user personas — making the onboarding "AI-powered perfect match" feel genuinely personalized.
+These two models were selected based on deep market research (April 2026): both are in their demand peak, both have strong YouTube educator communities, and they serve two distinct user personas — making the onboarding "AI-powered perfect match" framing feel genuinely personalized. *(The first MVP uses transparent recommendation rules; deeper LLM-based matching can come later — the product copy can stay "perfect match" as marketing.)*
 
 Recommendation logic:
 	•	Complete beginners or side-income seekers → TikTok Shop Affiliate (lower barrier, faster first results)
@@ -77,6 +79,7 @@ Foundation Roadmap (10 Steps — Video + Task format)
 
 Each step follows a strict format:
 	•	One curated YouTube video (embedded in-app via WKWebView — no external app switching, no downloads)
+	•	**While watching:** short bullet points that tell the user **what to pay attention to in the video** so the task afterwards is doable — this block is **required** for any step that includes a video
 	•	One direct action task derived from the video
 	•	One expected output: what the user will have produced by the end
 
@@ -94,14 +97,12 @@ Both models have 10 Foundation steps. Step structure (titles, tasks, outputs) is
 
 ⸻
 
-Results Timeline
-
-Shown on the Roadmap screen as milestone markers at key steps:
+{Results Timeline — idea to evaluate: shown on the Roadmap as milestone markers at key steps, for example:
 	•	After Step 3: "You understand your market better than 90% of beginners who never research their audience."
 	•	After Step 5: "You have a niche, a target client profile, and a clear value proposition."
 	•	After Step 10: "You have everything you need to land your first client. Most users send their first outreach within 48 hours of completing this step."
 
-These milestones set expectations, create motivation, and make the roadmap feel purposeful rather than arbitrary.
+These milestones would set expectations and motivation; exact copy and placement need validation.}
 
 ⸻
 
@@ -126,35 +127,33 @@ The dashboard is intentionally minimal. The next action is always the most promi
 Step Detail Screen
 	•	Phase chip + Step title
 	•	Embedded YouTube video (WKWebView, full-width, plays in-app)
-	•	One-sentence task description
+	•	**While watching** — required bullets: what to focus on in the video for this task
+	•	Task description (what to do after / alongside the video)
 	•	Expected output ("By the end of this step you will have: [X]")
 	•	"Ask your coach" button (AI coach, context-aware)
 	•	"Mark as Done" button — no confirmation, instant completion with a success animation
 
-No timer. No subtask checklist. No multiple resources. One video, one task, one button.
+No timer. No subtask checklist. No extra resource links. One video, one focused watch guide, one task, one completion action.
 
 ⸻
 
 AI Step Coach
 	•	Accessible via "Ask your coach" on the Step Detail screen
 	•	Opens a bottom sheet chat interface
-	•	Context-aware: knows the current step, the video content, and the user's business model
+	•	Context-aware: current step, task text, and business model {richer grounding in actual video / transcript content is most likely a later improvement}
 	•	Powered by OpenAI Chat Completions API (direct from app, no backend required)
 	•	Responses are concise, actionable, and encouraging
 
 ⸻
 
 Roadmap Screen
-	•	Foundation section: all 10 steps with completion state
-	•	Results Timeline milestones at key steps
+	•	Foundation section: all foundation steps with completion state
+	•	{Results Timeline milestones at key steps — see parenthetical section above; still under evaluation}
 	•	Later phases (Growth, Scale) shown but locked — coming soon
 
 ⸻
 
-Notifications + Widgets
-	•	Daily push notification at a configurable time: "Your next step is waiting. 15 minutes today."
-	•	Home screen and lock screen widget: current step name + streak counter
-	•	These are non-optional for the consistency loop — they are the Duolingo mechanic applied to business
+Notifications + Widgets — to build after MVP core: daily push at a configurable time, e.g. "Your next step is waiting. 15 minutes today."; home/lock screen widget with current step + streak. These reinforce the consistency loop / Duolingo-style mechanic.
 
 ⸻
 
@@ -164,11 +163,7 @@ Settings
 
 ⸻
 
-Monetization
-	•	7-day free trial (full access, no credit card friction at start)
-	•	€9.99 / month after trial (auto-renewal)
-	•	€59.99 / year option prominently displayed (~50% savings — maximizes LTV)
-	•	All Foundation steps accessible during trial; paywall activates after day 7
+Monetization — to define and implement after MVP core: e.g. trial, monthly/yearly pricing, paywall timing.
 
 ⸻
 
@@ -178,7 +173,7 @@ Local saving via UserDefaults:
 	•	Selected business model
 	•	Completed steps
 	•	Streak + streak days
-	•	Notification preference
+	•	Notification preference — when notifications ship
 
 ⸻
 
@@ -192,7 +187,7 @@ These belong to later versions:
 	•	More business models (Growth OS, Brandscaling, etc.)
 	•	Calendar sync
 	•	Weekly analytics dashboard
-	•	Advanced phases (Growth, Scale) with content
+	•	Later roadmap phases (Growth, Scale) with content
 
 ⸻
 
@@ -204,7 +199,7 @@ These belong to later versions:
 	4.	Do the one task it describes
 	5.	Mark as Done — success animation
 	6.	Streak increases
-	7.	Notification tomorrow: "Come back. 15 minutes. Your next step is ready."
+	7.	Notification tomorrow — when implemented: e.g. "Come back. 15 minutes. Your next step is ready.
 
 Everything else is secondary.
 
@@ -213,7 +208,7 @@ Everything else is secondary.
 ⭐ 5. Design Principles
 
 BeFree must feel:
-	•	Fast — complete a step in 15–30 minutes, no longer
+	•	Fast — **most** steps should land in roughly **15–30 minutes**, but this is a guideline, not a hard cap. Early Foundation tasks should skew **short** for a quick feedback loop; as users move into **Growth** and **Scale**, tasks can and should **take longer**, because execution at that stage is deeper real-world work, not a daily micro-drill.
 	•	Minimal — one thing at a time, always
 	•	Clear — the next action is never ambiguous
 	•	Motivating — progress feels real and visible

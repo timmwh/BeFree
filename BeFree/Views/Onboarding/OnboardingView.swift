@@ -541,7 +541,7 @@ private struct ModelPickerPageView: View {
                     .font(.custom("Inter", size: 30).weight(.bold))
                     .foregroundColor(Theme.Colors.textPrimary)
 
-                Text("All paths share the same Foundation.")
+                Text("Each model has its own videos, tasks, and foundation steps.")
                     .font(Theme.Typography.body)
                     .foregroundColor(Theme.Colors.textSecondary)
             }

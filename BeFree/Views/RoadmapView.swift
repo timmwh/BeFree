@@ -97,9 +97,9 @@ struct RoadmapView: View {
                         subtitle: "Scale your business to the next level"
                     )
                     
-                    // Advanced Phase (Locked)
+                    // Scale Phase (Locked)
                     LockedPhaseSection(
-                        title: "Advanced",
+                        title: "Scale",
                         subtitle: "Master advanced strategies"
                     )
                 }

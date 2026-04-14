@@ -57,6 +57,7 @@ class DataService {
     func getFirstActionsSteps() -> [Step] {
         return [
             Step(
+                id: StepID.firstActionsOutreach,
                 title: "Send Your First Outreach Messages",
                 description: "Send 10 outreach messages using your script. Log each in your tracker and note any early replies.",
                 duration: 30,
@@ -66,6 +67,7 @@ class DataService {
                 expectedOutput: "10 sent outreach messages logged in your tracker."
             ),
             Step(
+                id: StepID.firstActionsDiscovery,
                 title: "Book Your First Discovery Call",
                 description: "Respond to interested prospects, send a calendar link, and prepare your 5 discovery call questions.",
                 duration: 20,
@@ -83,12 +85,39 @@ private enum PlaceholderVideoID {
     static let tikTokShop = "oXDFPigXAqQ"
 }
 
+/// Stable IDs so completed steps persist across launches (per-model foundation IDs differ; First Actions IDs are shared).
+private enum StepID {
+    static let aaaFoundation01 = UUID(uuidString: "53981516-17e3-4afa-bb93-56be4a78a00c")!
+    static let aaaFoundation02 = UUID(uuidString: "e002c70d-705e-4325-8e18-02c56d59963f")!
+    static let aaaFoundation03 = UUID(uuidString: "7ecba634-fddc-41c3-8e32-683afa8c83e0")!
+    static let aaaFoundation04 = UUID(uuidString: "c0dad3b4-3357-4ce7-8c7e-bf9b0bab4cbd")!
+    static let aaaFoundation05 = UUID(uuidString: "cb5c2014-8c26-4b0a-9c7c-ff7d345fa852")!
+    static let aaaFoundation06 = UUID(uuidString: "b598aebf-64b2-4afe-b913-65bafd11dfcd")!
+    static let aaaFoundation07 = UUID(uuidString: "97a4808b-5d33-42a0-9922-6bb97c822581")!
+    static let aaaFoundation08 = UUID(uuidString: "aa2c6307-e463-4d71-9077-04091ea35b0a")!
+    static let aaaFoundation09 = UUID(uuidString: "cbe53c57-f6ab-4c92-a11e-21853cc56576")!
+    static let aaaFoundation10 = UUID(uuidString: "b447e9d6-e9c2-4eb2-9123-930ce18ec4a2")!
+    static let tiktokFoundation01 = UUID(uuidString: "9a452ac2-6f42-4b0d-805a-6f31cb5b4982")!
+    static let tiktokFoundation02 = UUID(uuidString: "29fddd85-ef82-495a-aa2f-f2a0573f0e78")!
+    static let tiktokFoundation03 = UUID(uuidString: "1e582923-965c-446e-b189-708d1cbcd6cd")!
+    static let tiktokFoundation04 = UUID(uuidString: "252891e5-37be-48ab-87d0-03ca1a348310")!
+    static let tiktokFoundation05 = UUID(uuidString: "89b278ff-205d-446d-99d5-e6c8a4d300ab")!
+    static let tiktokFoundation06 = UUID(uuidString: "576a37ed-bda1-4a29-8fe6-90981bec0871")!
+    static let tiktokFoundation07 = UUID(uuidString: "2eae6265-a6f8-4b39-981c-6ce40a89643c")!
+    static let tiktokFoundation08 = UUID(uuidString: "256b97ae-5db8-4e92-b987-c7b204275a64")!
+    static let tiktokFoundation09 = UUID(uuidString: "c953f0a3-ad0c-4c60-8c1f-f29f4bd18945")!
+    static let tiktokFoundation10 = UUID(uuidString: "99302990-db3f-4b17-b4c6-78b50453b741")!
+    static let firstActionsOutreach = UUID(uuidString: "8a00ed0b-e330-47f6-8f67-fa71c30f58f2")!
+    static let firstActionsDiscovery = UUID(uuidString: "f5ca4243-edfe-4fcd-a6d8-1b5a73aa79ac")!
+}
+
 // MARK: - AAA Foundation Steps
 
 private extension DataService {
     func foundationSteps_AAA() -> [Step] {
         return [
             Step(
+                id: StepID.aaaFoundation01,
                 title: "Understand the Business Model",
                 description: "After watching the video, write a one-paragraph summary in your own words explaining what an AAA does, how it makes money, and why businesses pay for automation.",
                 duration: 20,
@@ -102,6 +131,7 @@ private extension DataService {
                 expectedOutput: "A written one-paragraph summary of the AAA business model in your own words."
             ),
             Step(
+                id: StepID.aaaFoundation02,
                 title: "Choose Your Niche",
                 description: "Research 5 industries where businesses have obvious manual, repetitive workflows. Score each by pain intensity and budget. Pick one niche and commit.",
                 duration: 20,
@@ -115,6 +145,7 @@ private extension DataService {
                 expectedOutput: "One chosen niche with 3 reasons why it's the right fit for you."
             ),
             Step(
+                id: StepID.aaaFoundation03,
                 title: "Analyze Your Target Audience",
                 description: "Define your ideal client: their business size, team structure, and tech stack. List their top 3 most painful manual workflows and what tools they currently use.",
                 duration: 25,
@@ -128,6 +159,7 @@ private extension DataService {
                 expectedOutput: "A written ideal client profile with their 3 biggest pain points."
             ),
             Step(
+                id: StepID.aaaFoundation04,
                 title: "Validate the Market",
                 description: "Find 10+ businesses in your niche that are already paying for automation tools (Zapier, Make, HubSpot). Search job boards for automation-related roles. Confirm the market has budget.",
                 duration: 25,
@@ -141,6 +173,7 @@ private extension DataService {
                 expectedOutput: "A list of 10 businesses in your niche already spending on automation tools."
             ),
             Step(
+                id: StepID.aaaFoundation05,
                 title: "Create Your Value Proposition",
                 description: "Draft your value proposition using this format: \"I help [niche] save [X hours/week] by automating [specific workflow].\" Test it with 3 people — does it immediately make sense?",
                 duration: 20,
@@ -154,6 +187,7 @@ private extension DataService {
                 expectedOutput: "One clear, jargon-free value proposition sentence you can use in outreach."
             ),
             Step(
+                id: StepID.aaaFoundation06,
                 title: "Choose Your Primary Service",
                 description: "Pick one automation type you can build and deliver in under 2 weeks. Define exactly what the client gets and what results they can expect.",
                 duration: 20,
@@ -167,6 +201,7 @@ private extension DataService {
                 expectedOutput: "A defined service package: what's included, how it's delivered, and the starting price."
             ),
             Step(
+                id: StepID.aaaFoundation07,
                 title: "Build a Simple Online Presence",
                 description: "Update your LinkedIn headline to reflect your AAA specialization. Post 1 piece of content about automation. Set up a simple one-page site or Notion page with your offer.",
                 duration: 30,
@@ -180,6 +215,7 @@ private extension DataService {
                 expectedOutput: "An optimized LinkedIn profile and a published piece of content about automation."
             ),
             Step(
+                id: StepID.aaaFoundation08,
                 title: "Create 3 Portfolio Examples",
                 description: "Build 3 real automations using free tiers of Make/n8n/Zapier + OpenAI. Record a short screen demo of each. Add them to your portfolio page.",
                 duration: 45,
@@ -193,6 +229,7 @@ private extension DataService {
                 expectedOutput: "3 working automation demos with screen recordings added to your portfolio."
             ),
             Step(
+                id: StepID.aaaFoundation09,
                 title: "Write Your Outreach Script",
                 description: "Write your outreach message using this format: specific observation about the prospect + automation idea + low-stakes offer. Create a follow-up message for non-responders.",
                 duration: 25,
@@ -206,6 +243,7 @@ private extension DataService {
                 expectedOutput: "A ready-to-send outreach script + a follow-up message for non-responders."
             ),
             Step(
+                id: StepID.aaaFoundation10,
                 title: "Build Your First Prospect List",
                 description: "Research 50+ businesses showing signs of manual, automatable workflows. Note the specific automation opportunity for each. Organize in a tracker.",
                 duration: 30,
@@ -228,6 +266,7 @@ private extension DataService {
     func foundationSteps_TikTokShop() -> [Step] {
         return [
             Step(
+                id: StepID.tiktokFoundation01,
                 title: "Understand TikTok Shop Affiliate",
                 description: "Open TikTok and browse the TikTok Shop tab. Find 1 creator already doing TikTok Shop affiliate in a niche you like. Note what product they promote and how many views their videos get.",
                 duration: 15,
@@ -241,6 +280,7 @@ private extension DataService {
                 expectedOutput: "A clear understanding of how TikTok Shop affiliate commissions work, with 1 real creator example saved."
             ),
             Step(
+                id: StepID.tiktokFoundation02,
                 title: "Set Up Your TikTok Creator Account",
                 description: "Switch your TikTok to Creator mode (or create a dedicated account). Write a clear niche bio. Apply for TikTok Shop Affiliate access via the Seller Center.",
                 duration: 20,
@@ -254,6 +294,7 @@ private extension DataService {
                 expectedOutput: "An active TikTok creator account with a submitted affiliate application."
             ),
             Step(
+                id: StepID.tiktokFoundation03,
                 title: "Find Your Product Niche",
                 description: "Browse the TikTok Shop marketplace. Check commission rates (aim for 10-30%+). Pick 1 niche you can talk about naturally. Find 3 specific products with 1,000+ units sold.",
                 duration: 20,
@@ -267,6 +308,7 @@ private extension DataService {
                 expectedOutput: "1 chosen niche + 3 specific high-commission products you could promote."
             ),
             Step(
+                id: StepID.tiktokFoundation04,
                 title: "Analyze Top Performing Creators",
                 description: "Search TikTok for your niche + \"TikTok Shop\". Find 5 active creators. Watch their top 3 videos each. Write down the hook formula that appears most frequently.",
                 duration: 25,
@@ -280,6 +322,7 @@ private extension DataService {
                 expectedOutput: "5 reference creators saved + the hook formula you'll use for your own videos."
             ),
             Step(
+                id: StepID.tiktokFoundation05,
                 title: "Create Your First Test Video",
                 description: "Choose 1 product. Write a 3-sentence script: hook + 1 benefit + CTA. Film a 30-60 second vertical video with good lighting and clear audio. Add the product link and post it.",
                 duration: 30,
@@ -293,6 +336,7 @@ private extension DataService {
                 expectedOutput: "Your first TikTok Shop affiliate video posted with a product link attached."
             ),
             Step(
+                id: StepID.tiktokFoundation06,
                 title: "Understand the TikTok Algorithm",
                 description: "Review your first video's analytics: watch time %, replays, shares. Identify your weakest metric and plan your next video with the algorithm's signals in mind.",
                 duration: 20,
@@ -306,6 +350,7 @@ private extension DataService {
                 expectedOutput: "A written analysis of your first video's performance + 1 specific improvement for the next video."
             ),
             Step(
+                id: StepID.tiktokFoundation07,
                 title: "Build a Consistent Posting System",
                 description: "Batch-record 5 videos in one session. Set a daily posting time. Create a simple content calendar for the next 14 days. Schedule your first 3 posts.",
                 duration: 25,
@@ -319,6 +364,7 @@ private extension DataService {
                 expectedOutput: "5 pre-recorded videos + a 14-day content calendar with posting schedule."
             ),
             Step(
+                id: StepID.tiktokFoundation08,
                 title: "Optimize Your Product Selection",
                 description: "Open TikTok Shop analytics and sort products by click-through rate. Identify your top 2 products — what do they have in common? Find 3 new similar products. Remove products with zero clicks.",
                 duration: 20,
@@ -332,6 +378,7 @@ private extension DataService {
                 expectedOutput: "An optimized product list: top performers kept, zero-click products removed, 3 new products added."
             ),
             Step(
+                id: StepID.tiktokFoundation09,
                 title: "Scale With Proven Content",
                 description: "Find your best-performing video. Make 3 variations: same product angle, different hook. Make 2 more: same hook format, different product. Post all 5 within the next 5 days.",
                 duration: 25,
@@ -345,6 +392,7 @@ private extension DataService {
                 expectedOutput: "5 content variations recorded and scheduled based on your proven top-performing format."
             ),
             Step(
+                id: StepID.tiktokFoundation10,
                 title: "Build Your First Commission Pipeline",
                 description: "Confirm you have at least 10 active affiliate products linked across your videos. Check your TikTok Shop dashboard for clicks, GMV, and commissions. Set your 30-day income goal.",
                 duration: 30,

@@ -34,22 +34,29 @@ struct StepDetailView: View {
                         .aspectRatio(16/9, contentMode: .fit)
                         .cornerRadius(Theme.CornerRadius.sm)
 
-                    // Watch Notes
-                    if !step.watchNotes.isEmpty {
+                    // While watching (shown for every step that includes a video)
+                    if !step.videoId.isEmpty {
                         VStack(alignment: .leading, spacing: Theme.Spacing.md) {
                             SectionLabel(icon: "eye.fill", title: "While watching")
 
                             VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-                                ForEach(step.watchNotes, id: \.self) { note in
-                                    HStack(alignment: .top, spacing: Theme.Spacing.sm) {
-                                        Circle()
-                                            .fill(Theme.Colors.primaryBlue)
-                                            .frame(width: 6, height: 6)
-                                            .padding(.top, 7)
-                                        Text(note)
-                                            .font(Theme.Typography.body)
-                                            .foregroundColor(Theme.Colors.textSecondary)
-                                            .lineSpacing(3)
+                                if step.watchNotes.isEmpty {
+                                    Text("Focus on the parts of the video that connect directly to your task below.")
+                                        .font(Theme.Typography.body)
+                                        .foregroundColor(Theme.Colors.textSecondary)
+                                        .lineSpacing(3)
+                                } else {
+                                    ForEach(step.watchNotes, id: \.self) { note in
+                                        HStack(alignment: .top, spacing: Theme.Spacing.sm) {
+                                            Circle()
+                                                .fill(Theme.Colors.primaryBlue)
+                                                .frame(width: 6, height: 6)
+                                                .padding(.top, 7)
+                                            Text(note)
+                                                .font(Theme.Typography.body)
+                                                .foregroundColor(Theme.Colors.textSecondary)
+                                                .lineSpacing(3)
+                                        }
                                     }
                                 }
                             }
