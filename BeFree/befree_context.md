@@ -80,24 +80,17 @@ Each step follows a strict format:
 	•	One direct action task derived from the video
 	•	One expected output: what the user will have produced by the end
 
-Example — Step 2 (SMMA): Choose Your Niche
-	•	VIDEO: "How to Pick a Profitable SMMA Niche in 2025" — 14 min
-	•	TASK: Open Google Maps. Search "restaurant [your city]". Find 10 businesses with no or weak social media. Write their names down.
-	•	OUTPUT: A list of 10 real potential clients in your area.
+Example — Step 3 (AAA): Analyze Your Target Audience
+	•	VIDEO: "How to Profile Your Ideal AAA Client" — 15 min
+	•	TASK: Define your ideal client (business size, team structure, tech stack). List their top 3 most painful manual workflows.
+	•	OUTPUT: A written client profile you'll use to guide every pitch and outreach message.
 
-The 10 Foundation steps for both models:
-	1.	Understand the Business Model
-	2.	Choose Your Niche
-	3.	Analyze Your Target Audience
-	4.	Validate the Market
-	5.	Create Your Value Proposition
-	6.	Choose Your Primary Service
-	7.	Build a Simple Online Presence
-	8.	Create 3 Portfolio Examples
-	9.	Write Your Outreach Script
-	10.	Build Your First Prospect List
+Example — Step 2 (TikTok Shop): Set Up Your TikTok Creator Account
+	•	VIDEO: "How to Apply for TikTok Shop Affiliate and Get Approved Fast" — 12 min
+	•	TASK: Switch your TikTok account to Creator mode, write a clear niche bio, and apply for TikTok Shop Affiliate access.
+	•	OUTPUT: An active TikTok creator account with a submitted affiliate application.
 
-Step titles are universal. Videos, tasks, and outputs are specific to each model.
+Both models have 10 Foundation steps. Step structure (titles, tasks, outputs) is specific to each model — they do not share universal step titles.
 
 ⸻
 
@@ -166,7 +159,7 @@ Notifications + Widgets
 ⸻
 
 Settings
-	•	View and switch business model (SMMA ↔ AAA)
+	•	View and switch business model (TikTok Shop ↔ AAA)
 	•	Reset progress (with confirmation)
 
 ⸻
