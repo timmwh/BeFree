@@ -17,30 +17,6 @@ class DataService {
     func getBusinessModels() -> [BusinessModel] {
         return [
             BusinessModel(
-                name: "Social Media Marketing Agency",
-                shortName: "SMMA",
-                description: "Help businesses grow their revenue through social media management, paid ads, and organic content strategies.",
-                icon: "chart.line.uptrend.xyaxis",
-                benefits: [
-                    "Low startup cost (€0–€100)",
-                    "High demand from local businesses",
-                    "Scalable service model",
-                    "Learn valuable marketing skills"
-                ]
-            ),
-            BusinessModel(
-                name: "Growth Operating",
-                shortName: "Growth OS",
-                description: "Build and manage revenue operations, systems, and growth infrastructure for scaling companies.",
-                icon: "arrow.up.right.circle.fill",
-                benefits: [
-                    "High-ticket retainer model",
-                    "Recurring predictable income",
-                    "Work with funded startups",
-                    "Leverage ops & strategy skills"
-                ]
-            ),
-            BusinessModel(
                 name: "AI Automation Agency",
                 shortName: "AAA",
                 description: "Build custom AI-powered automations and workflows that save businesses time and money.",
@@ -48,20 +24,20 @@ class DataService {
                 benefits: [
                     "Cutting-edge technology",
                     "Premium pricing justified",
-                    "Huge market demand in 2025",
+                    "Huge market demand in 2026",
                     "Low competition vs. traditional agencies"
                 ]
             ),
             BusinessModel(
-                name: "Freelance Brandscaling",
-                shortName: "Brandscaling",
-                description: "Help personal brands and creators scale their online presence, content, and monetization.",
-                icon: "person.crop.circle.badge.plus",
+                name: "TikTok Shop Affiliate",
+                shortName: "TikTok Shop",
+                description: "Earn commissions by creating short videos for products on TikTok Shop — no inventory, no startup capital, just content.",
+                icon: "play.rectangle.fill",
                 benefits: [
-                    "Work with exciting creators",
-                    "Creative and strategic work",
-                    "Build your own audience too",
-                    "Flexible, remote-first model"
+                    "Zero startup capital required",
+                    "First commission possible within days",
+                    "Huge and growing platform demand",
+                    "No product or shipping to manage"
                 ]
             )
         ]
@@ -69,12 +45,24 @@ class DataService {
 
     // MARK: - Foundation Steps (model-specific)
 
-    func getFoundationSteps(for modelShortName: String = "SMMA") -> [Step] {
+    func getFoundationSteps(for modelShortName: String = "AAA") -> [Step] {
+        let steps: [Step]
         switch modelShortName {
-        case "Growth OS":    return foundationSteps_GrowthOS()
-        case "AAA":          return foundationSteps_AAA()
-        case "Brandscaling": return foundationSteps_Brandscaling()
-        default:             return foundationSteps_SMMA()
+        case "TikTok Shop": steps = foundationSteps_TikTokShop()
+        default:            steps = foundationSteps_AAA()
+        }
+        // Keep only the first (video) resource per step
+        return steps.map { step in
+            Step(
+                id: step.id,
+                title: step.title,
+                description: step.description,
+                duration: step.duration,
+                phase: step.phase,
+                subtasks: step.subtasks,
+                resources: Array(step.resources.prefix(1)),
+                isCompleted: step.isCompleted
+            )
         }
     }
 
@@ -107,364 +95,6 @@ class DataService {
                     "Show up and have an honest conversation"
                 ],
                 resources: []
-            )
-        ]
-    }
-}
-
-// MARK: - SMMA Foundation Steps
-
-private extension DataService {
-    func foundationSteps_SMMA() -> [Step] {
-        return [
-            Step(
-                title: "Understand the Business Model",
-                description: "Before you take any action, you need to deeply understand how a Social Media Marketing Agency works.\n\nYou'll learn the full end-to-end flow: how SMMA owners find clients, how they deliver social media management and paid ads, how they charge retainers, and what separates beginners from successful agency owners.\n\nBy the end of this step, you'll have a clear mental map of the SMMA business — no more confusion about where to start.",
-                duration: 20,
-                phase: .foundation,
-                subtasks: [
-                    "Watch a full breakdown of how SMMA works",
-                    "Understand the difference between organic and paid social services",
-                    "Learn how retainer pricing works for social media clients",
-                    "Write a one-paragraph summary in your own words"
-                ],
-                resources: [
-                    Resource(title: "The Honest Truth About Starting an SMMA in 2025", type: .video, url: "https://www.youtube.com/watch?v=grMGtl9SGZU", duration: "18 min"),
-                    Resource(title: "How Agency Business Models Actually Work", type: .article, url: "https://www.hubspot.com/agency", duration: "10 min read"),
-                    Resource(title: "SMMA Business Model Overview Template", type: .template, url: "https://www.notion.so/templates/smma-overview", duration: nil)
-                ]
-            ),
-            Step(
-                title: "Choose Your Niche",
-                description: "The biggest mistake SMMA beginners make is trying to serve every type of business. Your niche is the specific industry you'll focus on — and this decision will define your entire agency.\n\nA strong niche makes your pitch more convincing (\"I specialize in social media for gyms\"), your results more repeatable, and your portfolio more credible.\n\nTop SMMA niches include: restaurants, gyms & fitness, real estate, dental/medical, e-commerce, and local service businesses.",
-                duration: 20,
-                phase: .foundation,
-                subtasks: [
-                    "Research 5+ potential niches for SMMA (gyms, restaurants, real estate, etc.)",
-                    "Score each niche: ad spend potential, local availability, competition",
-                    "Pick your top 1 niche and commit",
-                    "Write down 3 reasons this niche is right for you"
-                ],
-                resources: [
-                    Resource(title: "Best SMMA Niches That Actually Pay in 2025", type: .video, url: "https://www.youtube.com/watch?v=mFiXhWo1r4s", duration: "14 min"),
-                    Resource(title: "How to Choose a Profitable SMMA Niche", type: .article, url: "https://www.entrepreneur.com/starting-a-business", duration: "8 min read"),
-                    Resource(title: "Niche Scoring Worksheet", type: .template, url: "https://www.notion.so/templates/niche-scoring", duration: nil)
-                ]
-            ),
-            Step(
-                title: "Analyze Your Target Audience",
-                description: "Knowing your niche isn't enough — you need to deeply understand the business owners inside it.\n\nWho is your ideal SMMA client? A gym owner frustrated by slow membership growth? A restaurant owner who tried Facebook ads but got nothing? The more specifically you understand them, the easier every conversation becomes.\n\nIn this step, you'll build a detailed client profile that will guide your pitch, your service design, and your marketing.",
-                duration: 25,
-                phase: .foundation,
-                subtasks: [
-                    "Define your ideal client: business size, location, revenue range",
-                    "List their top 3 social media pain points",
-                    "Identify which platforms they currently use (or avoid)",
-                    "Document what a successful month looks like for them"
-                ],
-                resources: [
-                    Resource(title: "How to Define Your Ideal SMMA Client", type: .video, url: "https://www.youtube.com/watch?v=jpXGYHjL5ck", duration: "15 min"),
-                    Resource(title: "Customer Avatar Worksheet", type: .article, url: "https://www.digitalmarketer.com/customer-avatar-worksheet/", duration: "10 min read"),
-                    Resource(title: "SMMA Client Profile Template", type: .template, url: "https://www.notion.so/templates/smma-client-profile", duration: nil)
-                ]
-            ),
-            Step(
-                title: "Validate the Market",
-                description: "Before you invest serious time building, you need proof that businesses in your niche are already paying for social media services.\n\nLook for businesses running Facebook/Instagram ads (they're already spending). Check who has a weak social media presence despite being a good business. These are your warmest prospects.\n\nValidation eliminates the risk of building a service nobody wants.",
-                duration: 25,
-                phase: .foundation,
-                subtasks: [
-                    "Find 10+ businesses in your niche currently running social ads (use Meta Ad Library)",
-                    "Identify 10+ businesses with poor social media presence",
-                    "Research what SMMA agencies in your area are charging",
-                    "Confirm your niche has the budget to pay €500–€2,000/month"
-                ],
-                resources: [
-                    Resource(title: "How to Find SMMA Clients Who Are Already Paying", type: .video, url: "https://www.youtube.com/watch?v=3FxJRbVLQ7A", duration: "16 min"),
-                    Resource(title: "Meta Ad Library (free tool for competitor research)", type: .article, url: "https://www.facebook.com/ads/library", duration: "5 min read"),
-                    Resource(title: "SMMA Market Validation Checklist", type: .template, url: "https://www.notion.so/templates/smma-validation", duration: nil)
-                ]
-            ),
-            Step(
-                title: "Create Your Value Proposition",
-                description: "Your value proposition is the clearest possible answer to: why should a business owner choose your SMMA over the hundreds of others?\n\nThe best SMMA value propositions are specific and outcome-focused: \"I help gyms in Berlin get 20+ new member inquiries per month through Instagram ads — or you don't pay.\"\n\nIn this step, you'll craft your value proposition using a proven framework and make it specific to your niche.",
-                duration: 20,
-                phase: .foundation,
-                subtasks: [
-                    "List the specific outcomes you can deliver for your niche",
-                    "Draft: \"I help [niche] get [result] through [service] in [timeframe]\"",
-                    "Research what results other SMMA owners promise",
-                    "Refine to one clear, jargon-free sentence with a specific outcome"
-                ],
-                resources: [
-                    Resource(title: "How to Write an SMMA Value Proposition That Closes Clients", type: .video, url: "https://www.youtube.com/watch?v=jJrImqFSZHE", duration: "11 min"),
-                    Resource(title: "Value Proposition Canvas Explained", type: .article, url: "https://www.strategyzer.com/library/the-value-proposition-canvas", duration: "8 min read"),
-                    Resource(title: "SMMA Value Proposition Builder", type: .template, url: "https://www.notion.so/templates/smma-value-prop", duration: nil)
-                ]
-            ),
-            Step(
-                title: "Choose Your Primary Service",
-                description: "Successful SMMA owners don't offer five services. They start with one, master it, and then expand.\n\nYour primary service should be something you can learn quickly, deliver consistently, and charge well for. Top SMMA starter services: Facebook/Instagram ad management, organic content creation, Instagram profile management, or short-form video editing.\n\nPick one. Package it. Price it. Don't change it for 90 days.",
-                duration: 20,
-                phase: .foundation,
-                subtasks: [
-                    "Research the top 5 services SMMA agencies sell",
-                    "Match services to your current skills (video editing, copywriting, design)",
-                    "Define exactly what's included in your core service package",
-                    "Set a starting monthly retainer price (e.g. €800/month)"
-                ],
-                resources: [
-                    Resource(title: "Best SMMA Services to Sell as a Beginner", type: .video, url: "https://www.youtube.com/watch?v=LRVnIQ4HhD4", duration: "13 min"),
-                    Resource(title: "How to Price Your SMMA Services", type: .article, url: "https://www.hubspot.com/agency-pricing", duration: "8 min read"),
-                    Resource(title: "SMMA Service Package Template", type: .template, url: "https://www.notion.so/templates/smma-package", duration: nil)
-                ]
-            ),
-            Step(
-                title: "Build a Simple Online Presence",
-                description: "You don't need a fancy website. But when a restaurant owner Googles you, you need to look real and credible.\n\nFor SMMA, your LinkedIn and Instagram profiles do most of the heavy lifting. LinkedIn is where B2B clients check you out. Instagram proves you understand social media. A simple one-page website or bio link rounds it out.\n\nLook like you know what you're doing — because you will.",
-                duration: 30,
-                phase: .foundation,
-                subtasks: [
-                    "Optimize your LinkedIn with your niche focus and social media expertise",
-                    "Set up or clean up an Instagram showcasing marketing knowledge",
-                    "Create a simple one-page site or Linktree with your offer",
-                    "Post 1 piece of content demonstrating social media expertise"
-                ],
-                resources: [
-                    Resource(title: "How to Build an SMMA Online Presence That Gets Clients", type: .video, url: "https://www.youtube.com/watch?v=7COrNlHBp4E", duration: "17 min"),
-                    Resource(title: "LinkedIn Profile Optimization for Agency Owners", type: .article, url: "https://www.linkedin.com/business/sales/blog/profile-best-practices", duration: "7 min read"),
-                    Resource(title: "SMMA Agency One-Page Website Template", type: .template, url: "https://www.notion.so/templates/smma-website", duration: nil)
-                ]
-            ),
-            Step(
-                title: "Create 3 Portfolio Examples",
-                description: "You can't wait for clients to build a portfolio — you create it before you have clients.\n\nFor SMMA, portfolio examples mean: mock ad campaigns, sample Instagram feed redesigns, or before/after content transformations for a real local business (done for free or as a case study). They prove you can do the actual work.\n\nThree solid examples are worth more than ten mediocre ones.",
-                duration: 45,
-                phase: .foundation,
-                subtasks: [
-                    "Create 1 mock Facebook/Instagram ad campaign for a business in your niche",
-                    "Redesign a real local business's Instagram profile (unpaid, for practice)",
-                    "Write a 1-page case study: what you'd change and why",
-                    "Add all 3 to your website/portfolio page"
-                ],
-                resources: [
-                    Resource(title: "How to Build an SMMA Portfolio With Zero Clients", type: .video, url: "https://www.youtube.com/watch?v=LzqTBjsJrUE", duration: "14 min"),
-                    Resource(title: "SMMA Portfolio Best Practices", type: .article, url: "https://www.smashingmagazine.com/portfolio-guide", duration: "9 min read"),
-                    Resource(title: "SMMA Portfolio Case Study Template", type: .template, url: "https://www.notion.so/templates/smma-case-study", duration: nil)
-                ]
-            ),
-            Step(
-                title: "Write Your Outreach Script",
-                description: "Most SMMA beginners fail at outreach because they send generic \"I can help your business grow\" messages. A good outreach script is specific, relevant, and low-friction.\n\nThe best performing SMMA outreach mentions a specific observation about the prospect's current social media (\"I noticed your Instagram posts aren't using Reels yet\") and ties it to a clear result. It ends with a low-commitment ask.\n\nThis script will be your main sales tool for the first 90 days.",
-                duration: 25,
-                phase: .foundation,
-                subtasks: [
-                    "Study 3–5 examples of SMMA cold outreach that gets replies",
-                    "Write your DM/email script using the Observation–Insight–Offer format",
-                    "Create a follow-up message for non-responders (send on day 3)",
-                    "Get feedback from 3 people before using it on real prospects"
-                ],
-                resources: [
-                    Resource(title: "SMMA Cold Outreach Scripts That Actually Work", type: .video, url: "https://www.youtube.com/watch?v=0NaRBOV_7LQ", duration: "19 min"),
-                    Resource(title: "The Cold DM Masterclass for Agency Owners", type: .article, url: "https://lemlist.com/blog/cold-email-masterclass", duration: "12 min read"),
-                    Resource(title: "SMMA Outreach Script Templates (DM + Email)", type: .template, url: "https://www.notion.so/templates/smma-outreach-scripts", duration: nil)
-                ]
-            ),
-            Step(
-                title: "Build Your First Prospect List",
-                description: "Your prospect list is the fuel for your SMMA. Without a list of qualified local businesses, there's no one to pitch.\n\nFor SMMA, the best prospects are local businesses with money to spend on marketing but a poor or non-existent social media presence. Google Maps, Instagram search, and the Meta Ad Library are your three best research tools.\n\nBuild a list of 50–100. Work it daily. Your first client is in there.",
-                duration: 30,
-                phase: .foundation,
-                subtasks: [
-                    "Define your search criteria: niche, city, weak social presence",
-                    "Find 50–100 local businesses using Google Maps + Instagram",
-                    "Note the specific social media weakness for each prospect",
-                    "Organize in a spreadsheet with business name, contact, and notes"
-                ],
-                resources: [
-                    Resource(title: "How to Build an SMMA Prospect List from Scratch", type: .video, url: "https://www.youtube.com/watch?v=1UWE8_1XPCE", duration: "16 min"),
-                    Resource(title: "Lead Research Guide for SMMA Owners", type: .article, url: "https://www.salesforce.com/resources/articles/lead-qualification", duration: "8 min read"),
-                    Resource(title: "SMMA Prospect Tracker Template", type: .template, url: "https://www.notion.so/templates/smma-prospect-tracker", duration: nil)
-                ]
-            )
-        ]
-    }
-}
-
-// MARK: - Growth OS Foundation Steps
-
-private extension DataService {
-    func foundationSteps_GrowthOS() -> [Step] {
-        return [
-            Step(
-                title: "Understand the Business Model",
-                description: "Before you take any action, you need to deeply understand how Growth Operating works as a service business.\n\nA Growth Operator embeds into a scaling company (usually post-revenue, pre-scale) and builds the revenue systems, operations, and growth infrastructure that allows them to grow without chaos. Think: revenue ops, sales systems, retention frameworks, and team processes.\n\nThis is a high-ticket, strategy-heavy model. You're not a freelancer — you're an operator.",
-                duration: 20,
-                phase: .foundation,
-                subtasks: [
-                    "Watch a breakdown of what Growth Operating means in practice",
-                    "Understand the difference between a Growth Operator and a consultant",
-                    "Learn how retainer + performance pricing works in this model",
-                    "Write a one-paragraph summary of what you'll be doing for clients"
-                ],
-                resources: [
-                    Resource(title: "What Is a Growth Operator? (Full Breakdown)", type: .video, url: "https://www.youtube.com/watch?v=grMGtl9SGZU", duration: "18 min"),
-                    Resource(title: "Revenue Operations Explained for Beginners", type: .article, url: "https://www.hubspot.com/revenue-operations", duration: "10 min read"),
-                    Resource(title: "Growth OS Business Model Overview", type: .template, url: "https://www.notion.so/templates/growth-os-overview", duration: nil)
-                ]
-            ),
-            Step(
-                title: "Choose Your Niche",
-                description: "Growth Operators who specialize win more deals than generalists. Your niche defines the type of company you'll embed into.\n\nThe best Growth OS niches are companies that are already making money but struggling to scale: SaaS companies with $10k–$100k MRR, e-commerce brands doing $500k–$5M/year, service businesses trying to systemize, or funded startups post-Series A.\n\nPick a company stage and sector you can speak to confidently.",
-                duration: 20,
-                phase: .foundation,
-                subtasks: [
-                    "Research 5+ company types that hire growth operators (SaaS, e-commerce, services)",
-                    "Score each by: deal size, access, competition, your background",
-                    "Pick the company stage + sector you'll specialize in",
-                    "Write down why you can credibly serve this type of company"
-                ],
-                resources: [
-                    Resource(title: "Best Niches for Growth Operators in 2025", type: .video, url: "https://www.youtube.com/watch?v=mFiXhWo1r4s", duration: "14 min"),
-                    Resource(title: "How to Pick a B2B Consulting Niche", type: .article, url: "https://www.entrepreneur.com/starting-a-business", duration: "8 min read"),
-                    Resource(title: "Growth OS Niche Scoring Worksheet", type: .template, url: "https://www.notion.so/templates/growth-niche-scoring", duration: nil)
-                ]
-            ),
-            Step(
-                title: "Analyze Your Target Audience",
-                description: "Your target client is a founder or executive at a scaling company who is overwhelmed by growth-related chaos — they're making money but can't systematize, retain customers, or hit consistent growth numbers.\n\nUnderstanding their specific frustrations (leaky sales pipeline, poor retention, no KPIs, team chaos) allows you to position your offer as the exact solution they've been looking for.",
-                duration: 25,
-                phase: .foundation,
-                subtasks: [
-                    "Define your ideal client: company stage, revenue range, team size",
-                    "List their 3 biggest operational and growth bottlenecks",
-                    "Identify where they spend time online (LinkedIn, Slack communities, podcasts)",
-                    "Understand what they've already tried before hiring someone like you"
-                ],
-                resources: [
-                    Resource(title: "How to Profile B2B Decision Makers", type: .video, url: "https://www.youtube.com/watch?v=jpXGYHjL5ck", duration: "15 min"),
-                    Resource(title: "Ideal Client Profile Framework for Operators", type: .article, url: "https://www.digitalmarketer.com/customer-avatar-worksheet/", duration: "10 min read"),
-                    Resource(title: "Growth OS Client Profile Template", type: .template, url: "https://www.notion.so/templates/growth-client-profile", duration: nil)
-                ]
-            ),
-            Step(
-                title: "Validate the Market",
-                description: "Before investing time in your offer, confirm that companies in your niche are actively hiring for growth and operations roles — and that they're willing to pay a premium for an external operator.\n\nLook at job boards (LinkedIn, Wellfound) for \"Head of Growth\", \"Revenue Operations\", \"Chief of Staff\" roles at companies matching your niche. These are companies who will pay you as a fractional operator instead.",
-                duration: 25,
-                phase: .foundation,
-                subtasks: [
-                    "Search LinkedIn for \"Head of Growth\" or \"RevOps\" jobs in your target company type",
-                    "Find 10+ companies actively trying to solve growth/operations problems",
-                    "Research what fractional operators in your niche charge (typical: $5k–$20k/month)",
-                    "Confirm the market has budget and a clear hiring signal"
-                ],
-                resources: [
-                    Resource(title: "How to Validate a B2B Consulting Offer", type: .video, url: "https://www.youtube.com/watch?v=3FxJRbVLQ7A", duration: "16 min"),
-                    Resource(title: "Fractional Operator Market Research Guide", type: .article, url: "https://www.shopify.com/blog/market-research", duration: "9 min read"),
-                    Resource(title: "Growth OS Market Validation Checklist", type: .template, url: "https://www.notion.so/templates/growth-validation", duration: nil)
-                ]
-            ),
-            Step(
-                title: "Create Your Value Proposition",
-                description: "Your value proposition as a Growth Operator needs to be specific about the outcome you deliver and the type of company you serve.\n\nThe best ones sound like this: \"I help SaaS companies between $20k–$100k MRR build the revenue systems that let them scale to Series A without burning out their team.\"\n\nVague value props like \"I help companies grow\" don't land. Specificity wins deals.",
-                duration: 20,
-                phase: .foundation,
-                subtasks: [
-                    "List the specific growth/ops outcomes you can drive (pipeline, retention, processes)",
-                    "Draft: \"I help [company type at stage] achieve [specific outcome] by [method]\"",
-                    "Test your value prop with 3 founders or operators for feedback",
-                    "Refine to one clear sentence with a specific, believable result"
-                ],
-                resources: [
-                    Resource(title: "How Operators Write Value Propositions That Win Clients", type: .video, url: "https://www.youtube.com/watch?v=jJrImqFSZHE", duration: "11 min"),
-                    Resource(title: "B2B Value Proposition Frameworks", type: .article, url: "https://www.strategyzer.com/library/the-value-proposition-canvas", duration: "8 min read"),
-                    Resource(title: "Growth OS Value Proposition Builder", type: .template, url: "https://www.notion.so/templates/growth-value-prop", duration: nil)
-                ]
-            ),
-            Step(
-                title: "Choose Your Primary Service",
-                description: "Growth Operators who try to do everything get hired for nothing. Pick one core system you'll build for your first clients.\n\nTop Growth OS starter services: Revenue operations setup (CRM, pipeline, reporting), Sales system buildout, Customer retention and churn reduction framework, or Go-to-market playbook.\n\nThe more specific your service, the easier it is to sell and deliver.",
-                duration: 20,
-                phase: .foundation,
-                subtasks: [
-                    "Research 5 core growth/ops services companies need most",
-                    "Match each service to your skills and experience",
-                    "Define a clear deliverable: what does the client receive at the end?",
-                    "Set a starting engagement price (e.g. €5,000 for a 30-day sprint)"
-                ],
-                resources: [
-                    Resource(title: "What Services Growth Operators Sell (and What Pays Most)", type: .video, url: "https://www.youtube.com/watch?v=LRVnIQ4HhD4", duration: "13 min"),
-                    Resource(title: "How to Package Fractional Services", type: .article, url: "https://www.hubspot.com/agency-pricing", duration: "8 min read"),
-                    Resource(title: "Growth OS Service Package Template", type: .template, url: "https://www.notion.so/templates/growth-package", duration: nil)
-                ]
-            ),
-            Step(
-                title: "Build a Simple Online Presence",
-                description: "Founders hiring Growth Operators will check your LinkedIn — almost exclusively. Your LinkedIn profile is your agency website.\n\nIt should clearly state: who you help, what outcome you drive, and what you've done before (even in past roles). A strong LinkedIn presence + 1–2 posts per week about growth/ops topics is enough to start getting inbound.\n\nDon't build a fancy site until LinkedIn is perfect.",
-                duration: 30,
-                phase: .foundation,
-                subtasks: [
-                    "Rewrite your LinkedIn headline to reflect your Growth OS positioning",
-                    "Write a LinkedIn About section using your value proposition",
-                    "Post 1 piece of content about a growth/ops insight or framework",
-                    "Connect with 20+ founders and operators in your target niche"
-                ],
-                resources: [
-                    Resource(title: "LinkedIn for Operators: Build a Profile That Gets Inbound", type: .video, url: "https://www.youtube.com/watch?v=7COrNlHBp4E", duration: "17 min"),
-                    Resource(title: "LinkedIn Profile Optimization Checklist", type: .article, url: "https://www.linkedin.com/business/sales/blog/profile-best-practices", duration: "7 min read"),
-                    Resource(title: "Operator LinkedIn Profile Template", type: .template, url: "https://www.notion.so/templates/operator-linkedin", duration: nil)
-                ]
-            ),
-            Step(
-                title: "Create 3 Portfolio Examples",
-                description: "You can't wait for clients to build a portfolio. Document what you've already done — or create hypothetical case studies for companies you'd want to work with.\n\nFor Growth OS, portfolio examples are: a before/after CRM setup, a sales pipeline you built (in a past job, side project, or for a friend's business), or a written growth strategy for a specific company type.\n\nOperators buy outcomes. Show them you can think in systems.",
-                duration: 45,
-                phase: .foundation,
-                subtasks: [
-                    "Document a real system you've built (at a job, side project, or for someone else)",
-                    "Create a mock \"Growth Audit\" for a company type in your niche",
-                    "Write a 1-page case study with the problem, approach, and expected result",
-                    "Publish the case study to your LinkedIn or a simple portfolio page"
-                ],
-                resources: [
-                    Resource(title: "How to Build a Consulting Portfolio Without Client Work", type: .video, url: "https://www.youtube.com/watch?v=LzqTBjsJrUE", duration: "14 min"),
-                    Resource(title: "B2B Portfolio Best Practices for Operators", type: .article, url: "https://www.smashingmagazine.com/portfolio-guide", duration: "9 min read"),
-                    Resource(title: "Growth OS Portfolio Case Study Template", type: .template, url: "https://www.notion.so/templates/growth-case-study", duration: nil)
-                ]
-            ),
-            Step(
-                title: "Write Your Outreach Script",
-                description: "Outreach for Growth Operators works best on LinkedIn with a personalized, insight-led approach. Founders respond to messages that show you've done your homework.\n\nThe best performing approach: reference something specific about their company (a funding round, a LinkedIn post, a public metric), tie it to a growth/ops challenge they're likely facing, and offer a brief call to explore if you can help.\n\nNo pitch decks. No feature lists. Just relevance.",
-                duration: 25,
-                phase: .foundation,
-                subtasks: [
-                    "Study 3–5 LinkedIn outreach examples that get founder replies",
-                    "Write your message using the Trigger–Insight–Offer format",
-                    "Create a follow-up for non-responders that adds value (share a relevant resource)",
-                    "Test it with a warm contact in your network before going cold"
-                ],
-                resources: [
-                    Resource(title: "LinkedIn Outreach for B2B Operators (What Actually Works)", type: .video, url: "https://www.youtube.com/watch?v=0NaRBOV_7LQ", duration: "19 min"),
-                    Resource(title: "How to Write Cold LinkedIn Messages That Get Replies", type: .article, url: "https://lemlist.com/blog/cold-email-masterclass", duration: "12 min read"),
-                    Resource(title: "Growth OS Outreach Script Templates", type: .template, url: "https://www.notion.so/templates/growth-outreach", duration: nil)
-                ]
-            ),
-            Step(
-                title: "Build Your First Prospect List",
-                description: "Your prospect list as a Growth Operator is a curated list of scaling companies that fit your niche exactly — not a spray-and-pray list, but a targeted 50.\n\nUse LinkedIn Sales Navigator, Crunchbase (for funded companies), Product Hunt, and job boards. Look for companies with fresh funding, hiring growth roles, or publicly discussing scaling challenges.\n\nQuality beats quantity here. 50 perfect prospects beats 500 random ones.",
-                duration: 30,
-                phase: .foundation,
-                subtasks: [
-                    "Define exact criteria: company stage, size, sector, growth signals",
-                    "Research 50 companies using LinkedIn, Crunchbase, or Wellfound",
-                    "Find the right decision-maker contact at each company",
-                    "Organize in a CRM or spreadsheet with growth signal notes"
-                ],
-                resources: [
-                    Resource(title: "How to Build a B2B Prospect List That Converts", type: .video, url: "https://www.youtube.com/watch?v=1UWE8_1XPCE", duration: "16 min"),
-                    Resource(title: "Lead Research Guide for B2B Operators", type: .article, url: "https://www.salesforce.com/resources/articles/lead-qualification", duration: "8 min read"),
-                    Resource(title: "Growth OS Prospect Tracker Template", type: .template, url: "https://www.notion.so/templates/growth-prospect-tracker", duration: nil)
-                ]
             )
         ]
     }
@@ -649,179 +279,159 @@ private extension DataService {
     }
 }
 
-// MARK: - Brandscaling Foundation Steps
+// MARK: - TikTok Shop Foundation Steps
 
 private extension DataService {
-    func foundationSteps_Brandscaling() -> [Step] {
+    func foundationSteps_TikTokShop() -> [Step] {
         return [
             Step(
-                title: "Understand the Business Model",
-                description: "Before you take any action, you need to deeply understand how Freelance Brandscaling works and what you're actually selling.\n\nA Brandscaler helps personal brands and creators grow their audience, content output, and monetization — typically through a combination of content strategy, ghostwriting, video editing, brand positioning, and funnel building. You embed into a creator's business and help them scale what's already working.\n\nYou're not an agency. You're a high-value creative partner.",
-                duration: 20,
+                title: "Understand TikTok Shop Affiliate",
+                description: "TikTok Shop Affiliate is one of the fastest-growing ways to make money online in 2026. You earn commissions by posting short videos about products — no inventory, no shipping, no customer service.\n\nHere's how it works: you apply to the TikTok Affiliate program, browse thousands of products in the TikTok Shop marketplace, add a product link to your video, and earn a commission every time someone buys through your link.\n\nYou're not selling anything yourself. You're matching the right product to the right audience — and getting paid for every sale.",
+                duration: 15,
                 phase: .foundation,
                 subtasks: [
-                    "Watch a breakdown of what Freelance Brandscaling actually means",
-                    "Understand the difference between a social media manager and a Brandscaler",
-                    "Learn how top brandscalers price their services (project, retainer, or rev-share)",
-                    "Write a one-paragraph description of the value you'll deliver"
+                    "Watch the intro video fully — understand the commission model",
+                    "Open TikTok and browse the TikTok Shop tab to see what's selling",
+                    "Find 1 creator already doing TikTok Shop affiliate in a niche you like",
+                    "Write down: what product are they promoting, and how many views are their videos getting?"
                 ],
                 resources: [
-                    Resource(title: "What Is Freelance Brandscaling? (Full Model Explained)", type: .video, url: "https://www.youtube.com/watch?v=grMGtl9SGZU", duration: "18 min"),
-                    Resource(title: "How Creator Economy Service Businesses Work", type: .article, url: "https://www.hubspot.com/creator-economy", duration: "10 min read"),
-                    Resource(title: "Brandscaling Business Model Overview", type: .template, url: "https://www.notion.so/templates/brandscaling-overview", duration: nil)
+                    Resource(title: "TikTok Shop Affiliate for Beginners 2026 — Complete Overview", type: .video, url: "https://www.youtube.com/results?search_query=tiktok+shop+affiliate+beginners+2025", duration: "15 min")
                 ]
             ),
             Step(
-                title: "Choose Your Niche",
-                description: "The creator economy is enormous. Successful brandscalers specialize in a specific type of creator or personal brand — not \"all content creators.\"\n\nTop Brandscaling niches: business coaches, fitness influencers, finance creators, SaaS founders building in public, speakers and authors, career/productivity creators, or niche B2B thought leaders.\n\nPick a creator type whose content world you already understand. If you consume their content, you understand their audience.",
+                title: "Set Up Your TikTok Creator Account",
+                description: "Before you can promote products, you need a TikTok account set up specifically for content creation — not just scrolling.\n\nThis means switching to a Creator or Business account, completing your profile with a clear niche focus, and applying for the TikTok Shop Affiliate program.\n\nThe application takes 1–3 days to approve. Do this today so you're not waiting when you're ready to post.",
                 duration: 20,
                 phase: .foundation,
                 subtasks: [
-                    "List 5+ types of creators/personal brands you could serve well",
-                    "Score each by: your interest, their revenue potential, content complexity",
-                    "Pick 1 creator niche you can speak their language in",
-                    "Write down what makes you uniquely qualified to help this type of creator"
+                    "Switch your TikTok account to Creator mode (or create a new dedicated account)",
+                    "Write a clear bio: what niche you cover and what value you give viewers",
+                    "Apply for TikTok Shop Affiliate access via the TikTok Shop Seller Center",
+                    "While waiting for approval, post 1 intro video to start your account"
                 ],
                 resources: [
-                    Resource(title: "Best Creator Niches for Brandscalers in 2025", type: .video, url: "https://www.youtube.com/watch?v=mFiXhWo1r4s", duration: "14 min"),
-                    Resource(title: "How to Find Your Brandscaling Niche", type: .article, url: "https://www.entrepreneur.com/starting-a-business", duration: "8 min read"),
-                    Resource(title: "Brandscaling Niche Scoring Worksheet", type: .template, url: "https://www.notion.so/templates/brandscaling-niche", duration: nil)
+                    Resource(title: "How to Apply for TikTok Shop Affiliate and Get Approved Fast", type: .video, url: "https://www.youtube.com/results?search_query=tiktok+shop+affiliate+setup+account+2025", duration: "12 min")
                 ]
             ),
             Step(
-                title: "Analyze Your Target Audience",
-                description: "Your target client is a creator or personal brand who has momentum but not systems — they're posting, growing, and making some money, but they're overwhelmed and leaving revenue on the table.\n\nThey want more output without more hours. They want someone who \"gets\" their brand and can run with it. They're often 10k–500k followers: established enough to pay, small enough to still need help.\n\nUnderstand what they fear, what they want, and what they've already tried.",
+                title: "Find Your Product Niche",
+                description: "The biggest mistake beginners make is promoting random products. Successful TikTok Shop affiliates focus on one product category — and become the go-to person for it.\n\nYour niche should be something you're genuinely interested in or already know about. The best niches are specific enough to build an audience, but broad enough to have many products: skincare, kitchen gadgets, gym accessories, phone accessories, pet products.\n\nBrowse the TikTok Shop marketplace and find the category where products have high commission rates AND your videos can feel authentic.",
+                duration: 20,
+                phase: .foundation,
+                subtasks: [
+                    "Open TikTok Shop marketplace and browse the top 5 product categories",
+                    "Check commission rates — aim for 10–30%+ commission per sale",
+                    "Pick 1 niche you can talk about naturally on camera",
+                    "Find 3 specific products in that niche with 1,000+ units sold"
+                ],
+                resources: [
+                    Resource(title: "Best TikTok Shop Niches With High Commissions in 2025", type: .video, url: "https://www.youtube.com/results?search_query=best+tiktok+shop+affiliate+niches+high+commission+2025", duration: "14 min")
+                ]
+            ),
+            Step(
+                title: "Analyze Top Performing Creators",
+                description: "You don't need to invent anything. The formula for TikTok Shop success is already in thousands of existing videos — you just need to reverse-engineer it.\n\nFind 5 creators in your niche who are actively promoting products. Watch their top-performing videos (the ones with the most views and purchases) and break down: How do they start the video (the hook)? How do they show the product? What do they say to make people click the link?\n\nThis analysis is your content playbook before you ever post a single video.",
                 duration: 25,
                 phase: .foundation,
                 subtasks: [
-                    "Define your ideal creator client: platform, niche, follower range, revenue level",
-                    "List their top 3 content and business bottlenecks",
-                    "Identify which platforms they're most active on and what they outsource",
-                    "Understand their relationship with contractors they've hired before"
+                    "Search TikTok for your niche + \"TikTok Shop\" and find 5 active creators",
+                    "Watch the top 3 videos from each creator — note their hook, pacing, and CTA",
+                    "Write down the hook formula that appears most frequently",
+                    "Save 5 videos as references you'll use when recording your own"
                 ],
                 resources: [
-                    Resource(title: "How to Profile Your Ideal Creator Client", type: .video, url: "https://www.youtube.com/watch?v=jpXGYHjL5ck", duration: "15 min"),
-                    Resource(title: "Creator Economy Client Profiling Guide", type: .article, url: "https://www.digitalmarketer.com/customer-avatar-worksheet/", duration: "10 min read"),
-                    Resource(title: "Brandscaling Client Profile Template", type: .template, url: "https://www.notion.so/templates/brandscaling-client-profile", duration: nil)
+                    Resource(title: "How to Reverse-Engineer Viral TikTok Shop Videos", type: .video, url: "https://www.youtube.com/results?search_query=tiktok+shop+viral+video+formula+reverse+engineer", duration: "16 min")
                 ]
             ),
             Step(
-                title: "Validate the Market",
-                description: "Before building your service, confirm that creators in your niche are actively hiring for content help — and that they're paying real money for it.\n\nLook at Twitter/X and LinkedIn for creators posting \"hiring: video editor / ghostwriter / content manager.\" Check platforms like Contra, Toptal, and LinkedIn jobs for creator-side roles. These are the exact people who will hire you.\n\nIf creators in your niche are already posting jobs, the market is validated.",
-                duration: 25,
-                phase: .foundation,
-                subtasks: [
-                    "Find 10+ creators in your niche actively posting content jobs (Twitter, LinkedIn)",
-                    "Research what brandscalers and creator assistants are charging",
-                    "Check which services creators most commonly outsource in your niche",
-                    "Confirm creators in your niche have revenue to invest in help (courses, sponsorships, etc.)"
-                ],
-                resources: [
-                    Resource(title: "How to Validate a Creator Services Business", type: .video, url: "https://www.youtube.com/watch?v=3FxJRbVLQ7A", duration: "16 min"),
-                    Resource(title: "Creator Economy Market Sizing Guide", type: .article, url: "https://www.shopify.com/blog/market-research", duration: "9 min read"),
-                    Resource(title: "Brandscaling Market Validation Checklist", type: .template, url: "https://www.notion.so/templates/brandscaling-validation", duration: nil)
-                ]
-            ),
-            Step(
-                title: "Create Your Value Proposition",
-                description: "Your value proposition as a Brandscaler must be specific about what you do for creators and what outcome you drive.\n\nVague: \"I help creators with their content.\" Strong: \"I help business coaches on LinkedIn go from 3 posts/week to 14 pieces of content weekly without them spending more than 1 hour on it.\"\n\nCreators buy outcomes (more content, more growth, more revenue) and trust (you get my voice, you won't dilute my brand). Address both.",
-                duration: 20,
-                phase: .foundation,
-                subtasks: [
-                    "List 5 specific outcomes you can drive for creators (output, growth, revenue)",
-                    "Define your trust differentiator: what makes you someone who \"gets\" their brand?",
-                    "Draft: \"I help [creator type] [achieve outcome] without [pain they want to avoid]\"",
-                    "Test with 3 creators or content professionals for gut-check feedback"
-                ],
-                resources: [
-                    Resource(title: "How to Write a Value Proposition Creators Actually Buy", type: .video, url: "https://www.youtube.com/watch?v=jJrImqFSZHE", duration: "11 min"),
-                    Resource(title: "Positioning for Creator Economy Service Businesses", type: .article, url: "https://www.strategyzer.com/library/the-value-proposition-canvas", duration: "8 min read"),
-                    Resource(title: "Brandscaling Value Proposition Builder", type: .template, url: "https://www.notion.so/templates/brandscaling-value-prop", duration: nil)
-                ]
-            ),
-            Step(
-                title: "Choose Your Primary Service",
-                description: "Great brandscalers specialize before they generalize. Pick one service that lets you make a big impact quickly and that matches your existing creative skills.\n\nTop Brandscaling starter services: LinkedIn or Twitter ghostwriting, short-form video editing (Reels/TikTok/Shorts), newsletter writing, podcast repurposing (long-form to clips + posts), or brand strategy and visual identity.\n\nPick what you're already good at. Skill + niche = fast traction.",
-                duration: 20,
-                phase: .foundation,
-                subtasks: [
-                    "List your creative skills: writing, video editing, design, strategy",
-                    "Match each skill to the top services creators in your niche outsource",
-                    "Define your core service package: what's included and what's the output?",
-                    "Set a starting price (e.g. €1,500/month for 12 LinkedIn posts + strategy)"
-                ],
-                resources: [
-                    Resource(title: "Best Creator Services to Freelance in 2025", type: .video, url: "https://www.youtube.com/watch?v=LRVnIQ4HhD4", duration: "13 min"),
-                    Resource(title: "How to Package Creator Services for Retainer Clients", type: .article, url: "https://www.hubspot.com/agency-pricing", duration: "8 min read"),
-                    Resource(title: "Brandscaling Service Package Template", type: .template, url: "https://www.notion.so/templates/brandscaling-package", duration: nil)
-                ]
-            ),
-            Step(
-                title: "Build a Simple Online Presence",
-                description: "For a Brandscaler, your online presence is your proof of concept. If you're helping creators build their brand — your own online presence should demonstrate that you know how.\n\nYou don't need to be famous. But a clean Twitter/X or LinkedIn profile showing your understanding of content, a few sharp posts about the creator economy, and a simple portfolio page is all you need to land your first paying client.\n\nYour personal brand is your agency website.",
+                title: "Create Your First Test Video",
+                description: "Your first video doesn't need to be perfect — it needs to exist. The only way to learn what works is to post and see what the algorithm does with it.\n\nUsing the hook formula you identified in step 4, record a 30–60 second video about one product from your niche. Show the product, explain one specific benefit, and end with a clear call to action: \"Link is in my bio\" or \"Click the product tag.\"\n\nPost it. Then watch the data.",
                 duration: 30,
                 phase: .foundation,
                 subtasks: [
-                    "Polish your Twitter/X or LinkedIn to reflect your Brandscaling specialization",
-                    "Post 3 pieces of content demonstrating creator economy insight",
-                    "Create a simple portfolio page: your service, your niche, 3 sample pieces",
-                    "Follow and engage with 20+ creators in your target niche"
+                    "Choose 1 product from your niche that you've seen perform well",
+                    "Write a 3-sentence script: hook + 1 benefit + CTA",
+                    "Film a 30–60 second vertical video — good lighting, clear audio",
+                    "Add the product link and post it with 3–5 relevant hashtags"
                 ],
                 resources: [
-                    Resource(title: "How to Build Your Personal Brand as a Brandscaler", type: .video, url: "https://www.youtube.com/watch?v=7COrNlHBp4E", duration: "17 min"),
-                    Resource(title: "Content Strategy for Service Freelancers", type: .article, url: "https://www.linkedin.com/business/sales/blog/profile-best-practices", duration: "7 min read"),
-                    Resource(title: "Brandscaling Portfolio Page Template", type: .template, url: "https://www.notion.so/templates/brandscaling-portfolio-page", duration: nil)
+                    Resource(title: "How to Film Your First TikTok Shop Affiliate Video (No Experience Needed)", type: .video, url: "https://www.youtube.com/results?search_query=first+tiktok+shop+affiliate+video+beginner", duration: "13 min")
                 ]
             ),
             Step(
-                title: "Create 3 Portfolio Examples",
-                description: "Creators hire brandscalers based on taste and voice match — not credentials. Your portfolio examples need to show you can write, edit, or strategize in a way that feels native to the type of creator you serve.\n\nCreate 3 spec pieces in the exact format you'd produce for a real client: a LinkedIn post series, a short-form video edit, a newsletter issue, or a content calendar. Make them for a real creator you admire (unpaid) or a mock version.\n\nIf it looks like real content from a real creator, it works as a portfolio.",
-                duration: 45,
+                title: "Understand the TikTok Algorithm",
+                description: "TikTok's algorithm is different from every other platform. It doesn't show your content to your followers first — it shows it to a small test group and measures watch time, replays, and shares. If those metrics are good, it pushes the video to more people.\n\nThis means: a brand new account with zero followers can go viral on day 1. But it also means the first 3 seconds of your video are everything — if viewers swipe away immediately, the algorithm buries the video.\n\nUnderstanding this changes how you write hooks and structure your content.",
+                duration: 20,
                 phase: .foundation,
                 subtasks: [
-                    "Create 1 spec piece: write or produce content as if for a creator in your niche",
-                    "Create 1 before/after: show how you'd improve an existing creator's content",
-                    "Create 1 strategy doc: a 4-week content plan for a creator in your niche",
-                    "Publish all 3 on your portfolio page with brief explanations"
+                    "Watch the algorithm video fully — take notes on the key ranking signals",
+                    "Review your first video's analytics: watch time %, replays, shares",
+                    "Identify your weakest metric and research how to improve it",
+                    "Plan your next video with the algorithm's signals in mind"
                 ],
                 resources: [
-                    Resource(title: "How to Build a Brandscaling Portfolio With No Clients", type: .video, url: "https://www.youtube.com/watch?v=LzqTBjsJrUE", duration: "14 min"),
-                    Resource(title: "Creator Content Portfolio Best Practices", type: .article, url: "https://www.smashingmagazine.com/portfolio-guide", duration: "9 min read"),
-                    Resource(title: "Brandscaling Portfolio Case Study Template", type: .template, url: "https://www.notion.so/templates/brandscaling-case-study", duration: nil)
+                    Resource(title: "How the TikTok Algorithm Actually Works in 2025", type: .video, url: "https://www.youtube.com/results?search_query=tiktok+algorithm+explained+2025+how+it+works", duration: "15 min")
                 ]
             ),
             Step(
-                title: "Write Your Outreach Script",
-                description: "The best way to land creator clients is to get on their radar by engaging genuinely before you ever pitch them — and when you do pitch, make it feel like a natural next step.\n\nFor Brandscaling, effective outreach means: engage with their content authentically for 1–2 weeks, then DM with a specific observation about their brand + a clear, low-stakes offer (\"I put together a content idea for your [platform] — can I share it?\").\n\nCreators are bombarded with pitches. Being a genuine fan first makes you different.",
+                title: "Build a Consistent Posting System",
+                description: "One video won't build a business. Consistency is the only strategy that works on TikTok — and consistency requires a system, not willpower.\n\nThe goal: 1 video per day for the next 14 days. That sounds like a lot, but each video only needs to be 30–60 seconds. With a content template and a batch recording session, you can film 7 videos in 2 hours.\n\nSet up your posting schedule now, before motivation runs out.",
                 duration: 25,
                 phase: .foundation,
                 subtasks: [
-                    "Study 3–5 outreach examples that work for landing creator clients",
-                    "Write a warm DM script: genuine observation + specific idea + soft offer",
-                    "Create a cold outreach version for creators you haven't engaged with yet",
-                    "Write a follow-up that delivers value (share a content idea for free)"
+                    "Batch-record 5 videos in one session using your hook template",
+                    "Set a daily posting time (7am–9am or 7pm–9pm perform best)",
+                    "Create a simple content calendar: product per day for 14 days",
+                    "Schedule your first 3 posts in advance using TikTok's scheduler"
                 ],
                 resources: [
-                    Resource(title: "How to Pitch Creators and Personal Brands (What Works)", type: .video, url: "https://www.youtube.com/watch?v=0NaRBOV_7LQ", duration: "19 min"),
-                    Resource(title: "DM Outreach Strategy for the Creator Economy", type: .article, url: "https://lemlist.com/blog/cold-email-masterclass", duration: "12 min read"),
-                    Resource(title: "Brandscaling Outreach Script Templates", type: .template, url: "https://www.notion.so/templates/brandscaling-outreach", duration: nil)
+                    Resource(title: "TikTok Content System for Affiliate Creators — Post Every Day Without Burnout", type: .video, url: "https://www.youtube.com/results?search_query=tiktok+content+system+posting+schedule+affiliate", duration: "18 min")
                 ]
             ),
             Step(
-                title: "Build Your First Prospect List",
-                description: "Your prospect list as a Brandscaler is a curated list of creators in your niche who are at the right stage — growing but not yet at the level where they have a full team.\n\nLook for creators with 5k–200k followers who are clearly doing the work themselves (posting inconsistently, repurposing nothing, missing obvious content opportunities). These creators know they need help — they just haven't found the right person yet.\n\nYou're looking for momentum + chaos. That's your entry point.",
+                title: "Optimize Your Product Selection",
+                description: "After 7–14 days of posting, your analytics will tell you which products are getting clicks and which aren't. This data is your product strategy.\n\nThe goal of this step is to double down on what's working and cut what isn't. Some products just convert better than others — often because the price point is right, the product solves an obvious problem, or the product is visually satisfying on camera.\n\nSwap out your worst performers and add more products that match the profile of your best performer.",
+                duration: 20,
+                phase: .foundation,
+                subtasks: [
+                    "Open TikTok Shop analytics and sort products by click-through rate",
+                    "Identify your top 2 performing products — what do they have in common?",
+                    "Find 3 new products that match the same profile (price, category, problem-solved)",
+                    "Remove products with zero clicks from your active promotions"
+                ],
+                resources: [
+                    Resource(title: "How to Use TikTok Shop Analytics to Pick Better Products", type: .video, url: "https://www.youtube.com/results?search_query=tiktok+shop+analytics+product+selection+affiliate", duration: "14 min")
+                ]
+            ),
+            Step(
+                title: "Scale With Proven Content",
+                description: "Once you have a video that's performing — getting views, clicks, and sales — your job is to create more versions of that exact format.\n\nThis is called content scaling: you take the hook, the product angle, and the structure that worked, and apply it to similar products or from slightly different angles. You're not starting from scratch every time — you're iterating on a proven formula.\n\nThis is how TikTok Shop affiliates go from €0 to €1,000/month — not by finding new tricks, but by repeating what already works.",
+                duration: 25,
+                phase: .foundation,
+                subtasks: [
+                    "Identify your best-performing video from the last 2 weeks",
+                    "Make 3 variations: same product angle, different hook",
+                    "Make 2 variations: same hook format, different product in your niche",
+                    "Post all 5 within the next 5 days and compare performance"
+                ],
+                resources: [
+                    Resource(title: "TikTok Shop Scaling Strategy — From First Sale to Consistent Income", type: .video, url: "https://www.youtube.com/results?search_query=tiktok+shop+affiliate+scaling+strategy+consistent+income", duration: "20 min")
+                ]
+            ),
+            Step(
+                title: "Build Your First Commission Pipeline",
+                description: "You now have the system in place. This final step is about making it official: you have a real affiliate business running, not just a hobby account.\n\nA commission pipeline means you have multiple products actively getting clicks every day, your posting is consistent, and you can see a clear path from views → clicks → purchases → commissions.\n\nBy the end of today, your TikTok Shop dashboard should show active products, click data, and your first sales. If it doesn't yet — it will within the next 7 days if you've followed the system.",
                 duration: 30,
                 phase: .foundation,
                 subtasks: [
-                    "Define your target creator: platform, follower range, niche, content gaps",
-                    "Find 50+ creators matching your criteria on Twitter, LinkedIn, YouTube, or Instagram",
-                    "Note the specific content gap or opportunity for each creator",
-                    "Organize in a tracker: creator, platform, follower count, content weakness, contact"
+                    "Confirm you have at least 10 active affiliate products linked across your videos",
+                    "Check your TikTok Shop dashboard: clicks, GMV, and commission earned",
+                    "Set your 30-day income goal and calculate how many sales/day you need",
+                    "Commit to posting daily for 30 more days — the results compound after day 14"
                 ],
                 resources: [
-                    Resource(title: "How to Build a Creator Prospect List for Brandscaling", type: .video, url: "https://www.youtube.com/watch?v=1UWE8_1XPCE", duration: "16 min"),
-                    Resource(title: "Lead Research for Creator Economy Freelancers", type: .article, url: "https://www.salesforce.com/resources/articles/lead-qualification", duration: "8 min read"),
-                    Resource(title: "Brandscaling Prospect Tracker Template", type: .template, url: "https://www.notion.so/templates/brandscaling-prospect-tracker", duration: nil)
+                    Resource(title: "My First Month TikTok Shop Affiliate Income Report — What Actually Happened", type: .video, url: "https://www.youtube.com/results?search_query=tiktok+shop+affiliate+income+report+first+month", duration: "17 min")
                 ]
             )
         ]

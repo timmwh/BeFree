@@ -81,12 +81,12 @@ struct CoachSheetView: View {
                         .padding(Theme.Spacing.lg)
                     }
                 }
-                .onChange(of: messages.count) { _ in
+                .onChange(of: messages.count) { _, _ in
                     if let last = messages.last {
                         withAnimation { proxy.scrollTo(last.id, anchor: .bottom) }
                     }
                 }
-                .onChange(of: isLoading) { loading in
+                .onChange(of: isLoading) { _, loading in
                     if loading {
                         withAnimation { proxy.scrollTo("typing", anchor: .bottom) }
                     }

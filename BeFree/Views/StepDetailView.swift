@@ -13,230 +13,136 @@ struct StepDetailView: View {
 
     let step: Step
 
-    @State private var isTimerRunning = false
-    @State private var elapsedTime = 0
-    @State private var timerTask: Task<Void, Never>?
-    @State private var checkedSubtasks: Set<Int> = []
-    @State private var showCompletionAlert = false
+    @State private var showSuccess = false
     @State private var showCoachSheet = false
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: Theme.Spacing.xl) {
-                // Header
-                VStack(alignment: .leading, spacing: Theme.Spacing.md) {
-                    PhaseChip(phase: step.phase.toBusinessPhase)
+        ZStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: Theme.Spacing.xl) {
+                    // Header
+                    VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+                        PhaseChip(phase: step.phase.toBusinessPhase)
 
-                    Text(step.title)
-                        .font(Theme.Typography.title1)
-                        .foregroundColor(Theme.Colors.textPrimary)
-
-                    if isTimerRunning {
-                        HStack(spacing: Theme.Spacing.xs) {
-                            Image(systemName: "timer")
-                                .font(.system(size: 14))
-                            Text(formatTime(elapsedTime))
-                                .font(Theme.Typography.callout)
-                                .fontWeight(.medium)
-                        }
-                        .foregroundColor(Theme.Colors.primaryBlue)
+                        Text(step.title)
+                            .font(Theme.Typography.title1)
+                            .foregroundColor(Theme.Colors.textPrimary)
                     }
-                }
 
-                // Description Section
-                VStack(alignment: .leading, spacing: Theme.Spacing.md) {
-                    Text("What You'll Do Today")
-                        .font(Theme.Typography.title3)
-                        .foregroundColor(Theme.Colors.textPrimary)
-
-                    Text(step.description)
+                    // Description — first paragraph only
+                    Text(step.description.components(separatedBy: "\n\n").first ?? step.description)
                         .font(Theme.Typography.body)
                         .foregroundColor(Theme.Colors.textSecondary)
                         .lineSpacing(4)
-                }
 
-                // Subtasks Section
-                if !step.subtasks.isEmpty {
-                    VStack(alignment: .leading, spacing: Theme.Spacing.md) {
-                        Text("Tasks")
-                            .font(Theme.Typography.title3)
-                            .foregroundColor(Theme.Colors.textPrimary)
-
-                        VStack(spacing: Theme.Spacing.sm) {
-                            ForEach(Array(step.subtasks.enumerated()), id: \.offset) { index, subtask in
-                                SubtaskRow(
-                                    title: subtask,
-                                    isChecked: checkedSubtasks.contains(index),
-                                    onToggle: {
-                                        if checkedSubtasks.contains(index) {
-                                            checkedSubtasks.remove(index)
-                                        } else {
-                                            checkedSubtasks.insert(index)
-                                        }
-                                    }
-                                )
+                    // Single recommended resource
+                    if let resource = step.resources.first {
+                        VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+                            HStack(spacing: Theme.Spacing.xs) {
+                                Image(systemName: "star.fill")
+                                    .font(.system(size: 12))
+                                    .foregroundColor(Theme.Colors.primaryBlue)
+                                Text("Recommended")
+                                    .font(Theme.Typography.caption)
+                                    .foregroundColor(Theme.Colors.primaryBlue)
+                                    .tracking(0.5)
+                                    .textCase(.uppercase)
                             }
+                            ResourceCard(resource: resource)
                         }
                     }
-                }
 
-                // Resources Section
-                if !step.resources.isEmpty {
-                    VStack(alignment: .leading, spacing: Theme.Spacing.md) {
-                        Text("Resources")
-                            .font(Theme.Typography.title3)
-                            .foregroundColor(Theme.Colors.textPrimary)
-
-                        VStack(spacing: Theme.Spacing.sm) {
-                            ForEach(step.resources) { resource in
-                                ResourceCard(resource: resource)
+                    // AI Coach button
+                    Button(action: { showCoachSheet = true }) {
+                        HStack(spacing: Theme.Spacing.md) {
+                            ZStack {
+                                Theme.Gradients.primaryButton
+                                Image(systemName: "sparkles")
+                                    .font(.system(size: 14, weight: .semibold))
+                                    .foregroundColor(.white)
                             }
-                        }
-                    }
-                }
+                            .frame(width: 36, height: 36)
+                            .cornerRadius(Theme.CornerRadius.sm)
 
-                // AI Coach Button
-                Button(action: { showCoachSheet = true }) {
-                    HStack(spacing: Theme.Spacing.md) {
-                        ZStack {
-                            Theme.Gradients.primaryButton
-                            Image(systemName: "sparkles")
-                                .font(.system(size: 14, weight: .semibold))
-                                .foregroundColor(.white)
-                        }
-                        .frame(width: 36, height: 36)
-                        .cornerRadius(Theme.CornerRadius.sm)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Ask your coach")
+                                    .font(Theme.Typography.bodyMedium)
+                                    .foregroundColor(Theme.Colors.textPrimary)
+                                Text("Stuck or have a question? Get instant guidance.")
+                                    .font(Theme.Typography.caption)
+                                    .foregroundColor(Theme.Colors.textSecondary)
+                            }
 
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Ask your coach")
-                                .font(Theme.Typography.bodyMedium)
-                                .foregroundColor(Theme.Colors.textPrimary)
-                            Text("Stuck or have a question? Get instant guidance.")
-                                .font(Theme.Typography.caption)
+                            Spacer()
+
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 12, weight: .semibold))
                                 .foregroundColor(Theme.Colors.textSecondary)
                         }
-
-                        Spacer()
-
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 12, weight: .semibold))
-                            .foregroundColor(Theme.Colors.textSecondary)
+                        .padding(Theme.Spacing.lg)
+                        .background(Theme.Colors.cardBackground)
+                        .cornerRadius(Theme.CornerRadius.md)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
+                                .stroke(Theme.Colors.primaryBlue.opacity(0.3), lineWidth: 0.633)
+                        )
                     }
-                    .padding(Theme.Spacing.lg)
-                    .background(Theme.Colors.cardBackground)
-                    .cornerRadius(Theme.CornerRadius.md)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
-                            .stroke(Theme.Colors.primaryBlue.opacity(0.3), lineWidth: 0.633)
-                    )
+
+                    // Mark as Done
+                    PrimaryButton("Mark as Done", icon: "checkmark") {
+                        markDone()
+                    }
+                    .padding(.top, Theme.Spacing.sm)
                 }
-
-                // Action Buttons
-                VStack(spacing: Theme.Spacing.md) {
-                    if !isTimerRunning {
-                        PrimaryButton("Start Timer", icon: "play.fill") {
-                            startTimer()
-                        }
-                    }
-
-                    if isTimerRunning {
-                        PrimaryButton("Complete Step", icon: "checkmark") {
-                            showCompletionAlert = true
-                        }
-                    }
-                }
-                .padding(.top, Theme.Spacing.sm)
+                .padding(Theme.Spacing.lg)
             }
-            .padding(Theme.Spacing.lg)
-        }
-        .background(Theme.Colors.background)
-        .navigationBarTitleDisplayMode(.inline)
-        .alert("Complete Step?", isPresented: $showCompletionAlert) {
-            Button("Cancel", role: .cancel) { }
-            Button("Complete") {
-                completeStep()
+            .background(Theme.Colors.background)
+            .navigationBarTitleDisplayMode(.inline)
+            .sheet(isPresented: $showCoachSheet) {
+                CoachSheetView(step: step)
+                    .environmentObject(viewModel)
+                    .presentationDetents([.medium, .large])
+                    .presentationDragIndicator(.visible)
             }
-        } message: {
-            Text("Mark this step as completed? You can always review the resources later.")
-        }
-        .sheet(isPresented: $showCoachSheet) {
-            CoachSheetView(step: step)
-                .environmentObject(viewModel)
-                .presentationDetents([.medium, .large])
-                .presentationDragIndicator(.visible)
-        }
-        .onDisappear {
-            stopTimer()
-        }
-    }
 
-    // MARK: - Timer Functions
-
-    private func startTimer() {
-        isTimerRunning = true
-        timerTask = Task {
-            while !Task.isCancelled {
-                try? await Task.sleep(nanoseconds: 1_000_000_000)
-                elapsedTime += 1
-            }
-        }
-    }
-
-    private func stopTimer() {
-        timerTask?.cancel()
-        isTimerRunning = false
-    }
-
-    private func formatTime(_ seconds: Int) -> String {
-        let minutes = seconds / 60
-        let remainingSeconds = seconds % 60
-        return String(format: "%02d:%02d", minutes, remainingSeconds)
-    }
-
-    private func completeStep() {
-        let seconds = elapsedTime
-        stopTimer()
-        viewModel.completeStep(step, sessionSeconds: seconds)
-        dismiss()
-    }
-}
-
-// MARK: - Subtask Row Component
-
-struct SubtaskRow: View {
-    let title: String
-    let isChecked: Bool
-    let onToggle: () -> Void
-
-    var body: some View {
-        Button(action: onToggle) {
-            HStack(spacing: Theme.Spacing.md) {
+            // Success overlay
+            if showSuccess {
                 ZStack {
-                    RoundedRectangle(cornerRadius: 6)
-                        .fill(isChecked ? Theme.Colors.primaryBlue : Theme.Colors.cardBackground)
-                        .frame(width: 24, height: 24)
+                    Theme.Colors.background.opacity(0.85)
+                        .ignoresSafeArea()
 
-                    if isChecked {
-                        Image(systemName: "checkmark")
-                            .font(.system(size: 12, weight: .bold))
-                            .foregroundColor(.white)
-                    } else {
-                        RoundedRectangle(cornerRadius: 6)
-                            .stroke(Theme.Colors.divider, lineWidth: 2)
-                            .frame(width: 24, height: 24)
+                    VStack(spacing: Theme.Spacing.lg) {
+                        ZStack {
+                            Theme.Colors.successBg
+                            Image(systemName: "checkmark")
+                                .font(.system(size: 40, weight: .semibold))
+                                .foregroundColor(Theme.Colors.success)
+                        }
+                        .frame(width: 96, height: 96)
+                        .cornerRadius(Theme.CornerRadius.xl)
+                        .shadow(color: Theme.Colors.success.opacity(0.4), radius: 30, x: 0, y: 0)
+                        .scaleEffect(showSuccess ? 1 : 0.5)
+                        .animation(.spring(response: 0.4, dampingFraction: 0.6), value: showSuccess)
+
+                        Text("Step Complete")
+                            .font(Theme.Typography.bodySemiBold)
+                            .foregroundColor(Theme.Colors.textPrimary)
+                            .opacity(showSuccess ? 1 : 0)
+                            .animation(.easeIn(duration: 0.2).delay(0.15), value: showSuccess)
                     }
                 }
-
-                Text(title)
-                    .font(Theme.Typography.callout)
-                    .foregroundColor(isChecked ? Theme.Colors.textSecondary : Theme.Colors.textPrimary)
-                    .strikethrough(isChecked)
-
-                Spacer()
+                .transition(.opacity)
             }
-            .padding(Theme.Spacing.md)
-            .background(Theme.Colors.cardBackground)
-            .cornerRadius(Theme.CornerRadius.md)
+        }
+    }
+
+    private func markDone() {
+        viewModel.completeStep(step, sessionSeconds: 0)
+        withAnimation(.easeIn(duration: 0.2)) {
+            showSuccess = true
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.9) {
+            dismiss()
         }
     }
 }

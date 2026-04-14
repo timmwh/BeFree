@@ -37,15 +37,15 @@ struct OnboardingView: View {
 
     var recommendedModel: BusinessModel {
         let models = viewModel.allBusinessModels
+        // TikTok Shop → complete beginners and side-income seekers (fast results, zero capital)
+        // AAA → experienced users and those building a full business or replacing their job
         switch (selectedExperience, selectedGoal) {
-        case (.experienced, _):
-            return models.first(where: { $0.shortName == "AAA" }) ?? models[0]
-        case (_, .replaceJob):
-            return models.first(where: { $0.shortName == "Growth OS" }) ?? models[0]
-        case (.tried, .sideIncome):
-            return models.first(where: { $0.shortName == "Brandscaling" }) ?? models[0]
+        case (_, .sideIncome):
+            return models.first(where: { $0.shortName == "TikTok Shop" }) ?? models[0]
+        case (.beginner, _):
+            return models.first(where: { $0.shortName == "TikTok Shop" }) ?? models[0]
         default:
-            return models.first(where: { $0.shortName == "SMMA" }) ?? models[0]
+            return models.first(where: { $0.shortName == "AAA" }) ?? models[0]
         }
     }
 

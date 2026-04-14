@@ -9,8 +9,6 @@ import SwiftUI
 
 struct DashboardView: View {
     @EnvironmentObject var viewModel: AppViewModel
-    @State private var navigateToStepDetail = false
-    
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -113,23 +111,6 @@ struct DashboardView: View {
                         .cornerRadius(Theme.CornerRadius.lg)
                     }
                     
-                    // Progress Section
-                    VStack(alignment: .leading, spacing: Theme.Spacing.md) {
-                        HStack {
-                            Image(systemName: "chart.line.uptrend.xyaxis")
-                                .font(.system(size: 16))
-                                .foregroundColor(Theme.Colors.primaryBlue)
-                            
-                            Text("Progress")
-                                .font(Theme.Typography.bodyBold)
-                                .foregroundColor(Theme.Colors.textPrimary)
-                        }
-                        
-                        ProgressCard(
-                            completed: viewModel.completedStepsCount,
-                            total: viewModel.totalStepsCount
-                        )
-                    }
                 }
                 .padding(.horizontal, Theme.Spacing.lg)
                 .padding(.bottom, Theme.Spacing.xl)
