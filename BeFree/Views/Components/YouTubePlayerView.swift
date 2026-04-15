@@ -9,6 +9,15 @@ import SwiftUI
 import UIKit
 import WebKit
 
+/// Gleicht kleine Scroll-Insets/Offsets im `WKWebView`, die den Embed-Inhalt vertikal verschieben können.
+private func pinYouTubeWebViewScrollToTop(_ webView: WKWebView) {
+    let sv = webView.scrollView
+    sv.contentInset = .zero
+    sv.verticalScrollIndicatorInsets = .zero
+    sv.horizontalScrollIndicatorInsets = .zero
+    sv.setContentOffset(.zero, animated: false)
+}
+
 // MARK: - Public SwiftUI surface (poster → web player)
 
 struct YouTubePlayerView: View {
@@ -20,10 +29,24 @@ struct YouTubePlayerView: View {
         Group {
             if videoId.isEmpty {
                 videoComingSoonPlaceholder
-            } else if showWebPlayer {
-                YouTubeWebPlayer(videoId: videoId, autoplay: true)
+                    .frame(maxWidth: .infinity)
+                    .aspectRatio(16 / 9, contentMode: .fit)
             } else {
-                posterTapToPlay
+                // Eine feste 16:9-Fläche + overlay: Poster und WebView teilen exakt dieselben Bounds
+                // (vermeidet unterschiedliche Layout-Pfade bei if/else im Group).
+                Color.clear
+                    .aspectRatio(16 / 9, contentMode: .fit)
+                    .frame(maxWidth: .infinity)
+                    .overlay {
+                        if showWebPlayer {
+                            YouTubeWebPlayer(videoId: videoId, autoplay: true)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        } else {
+                            posterTapToPlay
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        }
+                    }
+                    .clipped()
             }
         }
         .onChange(of: videoId) { _, _ in
@@ -35,15 +58,14 @@ struct YouTubePlayerView: View {
         Text("Video coming soon")
             .font(Theme.Typography.body)
             .foregroundColor(Theme.Colors.textSecondary)
-            .frame(maxWidth: .infinity)
-            .aspectRatio(16 / 9, contentMode: .fit)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Theme.Colors.cardBackground)
     }
 
     private var posterTapToPlay: some View {
-        Button {
-            showWebPlayer = true
-        } label: {
+        GeometryReader { geo in
+            let w = geo.size.width
+            let h = geo.size.height
             ZStack {
                 AsyncImage(url: Self.thumbnailURL(for: videoId)) { phase in
                     switch phase {
@@ -56,7 +78,7 @@ struct YouTubePlayerView: View {
                     case .success(let image):
                         image
                             .resizable()
-                            .aspectRatio(16 / 9, contentMode: .fill)
+                            .scaledToFill()
                     case .failure:
                         Theme.Colors.cardBackground
                             .overlay {
@@ -68,21 +90,27 @@ struct YouTubePlayerView: View {
                         Theme.Colors.cardBackground
                     }
                 }
-                .frame(maxWidth: .infinity)
-                .aspectRatio(16 / 9, contentMode: .fit)
+                .frame(width: w, height: h)
                 .clipped()
 
                 Color.black.opacity(0.22)
+                    .frame(width: w, height: h)
+                    .allowsHitTesting(false)
 
                 Image(systemName: "play.circle.fill")
                     .font(.system(size: 64))
                     .symbolRenderingMode(.palette)
                     .foregroundStyle(.white, .white.opacity(0.35))
                     .shadow(color: .black.opacity(0.35), radius: 10, y: 4)
+                    .allowsHitTesting(false)
             }
+            .frame(width: w, height: h)
+            .contentShape(Rectangle())
+            .onTapGesture { showWebPlayer = true }
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("Video abspielen")
+            .accessibilityAddTraits(.isButton)
         }
-        .buttonStyle(.plain)
-        .accessibilityLabel("Video abspielen")
     }
 
     private static func thumbnailURL(for videoId: String) -> URL? {
@@ -131,6 +159,10 @@ private struct YouTubeWebPlayer: UIViewRepresentable {
             guard autoplayScheduledForGeneration != gen else { return }
             autoplayScheduledForGeneration = gen
             Self.scheduleAutoplay(webView: webView, attempt: 0, generation: gen, coordinator: self)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) { [weak self, weak webView] in
+                guard let self, let webView, self.loadGeneration == gen else { return }
+                pinYouTubeWebViewScrollToTop(webView)
+            }
         }
 
         private static func scheduleAutoplay(
@@ -225,6 +257,10 @@ private struct YouTubeWebPlayer: UIViewRepresentable {
         webView.backgroundColor = UIColor(Theme.Colors.cardBackground)
         webView.scrollView.isScrollEnabled = false
         webView.scrollView.bounces = false
+        webView.scrollView.contentInsetAdjustmentBehavior = .never
+        webView.scrollView.contentInset = .zero
+        webView.scrollView.scrollIndicatorInsets = .zero
+        webView.clipsToBounds = true
         return webView
     }
 
@@ -242,11 +278,13 @@ private struct YouTubeWebPlayer: UIViewRepresentable {
             </html>
             """
             webView.loadHTMLString(placeholder, baseURL: Self.htmlBaseURL)
+            pinYouTubeWebViewScrollToTop(webView)
             return
         }
 
         let key = "\(videoId)|autoplay=\(autoplay)"
         if coordinator.loadedKey == key {
+            pinYouTubeWebViewScrollToTop(webView)
             return
         }
 
@@ -256,6 +294,9 @@ private struct YouTubeWebPlayer: UIViewRepresentable {
         coordinator.prepareForNewLoad(autoplay: autoplay)
         coordinator.loadedKey = key
         webView.load(URLRequest(url: embedURL))
+        DispatchQueue.main.async {
+            pinYouTubeWebViewScrollToTop(webView)
+        }
     }
 
     /// Nur typische YouTube-Video-IDs (kein eingeschleuster Inhalt in der URL).
@@ -284,7 +325,6 @@ private struct YouTubeWebPlayer: UIViewRepresentable {
 
 #Preview {
     YouTubePlayerView(videoId: "dQw4w9WgXcQ")
-        .aspectRatio(16/9, contentMode: .fit)
         .cornerRadius(12)
         .padding()
         .background(Theme.Colors.background)

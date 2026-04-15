@@ -31,7 +31,6 @@ struct StepDetailView: View {
 
                     // YouTube Video
                     YouTubePlayerView(videoId: step.videoId)
-                        .aspectRatio(16/9, contentMode: .fit)
                         .cornerRadius(Theme.CornerRadius.sm)
 
                     // While watching (shown for every step that includes a video)
