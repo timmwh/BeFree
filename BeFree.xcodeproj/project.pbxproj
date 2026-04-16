@@ -6,7 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		A1B2C3D42EE54821000F0002 /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D42EE54821000F0001 /* Fonts */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
+		A1B2C3D42EE54821000F0001 /* Fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Fonts; sourceTree = "<group>"; };
 		DED2CBBC2EC4981C0009917E /* BeFree.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BeFree.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -29,9 +34,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A1B2C3D42EE54821000F0003 /* Supporting */ = {
+			isa = PBXGroup;
+			children = (
+				A1B2C3D42EE54821000F0001 /* Fonts */,
+			);
+			path = Supporting;
+			sourceTree = "<group>";
+		};
 		DED2CBB32EC4981C0009917E = {
 			isa = PBXGroup;
 			children = (
+				A1B2C3D42EE54821000F0003 /* Supporting */,
 				DED2CBBE2EC4981C0009917E /* BeFree */,
 				DED2CBBD2EC4981C0009917E /* Products */,
 			);
@@ -109,6 +123,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1B2C3D42EE54821000F0002 /* Fonts in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -256,6 +271,7 @@
 				DEVELOPMENT_TEAM = X7LA4S34S6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Supporting/FontInfo.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -289,6 +305,7 @@
 				DEVELOPMENT_TEAM = X7LA4S34S6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Supporting/FontInfo.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

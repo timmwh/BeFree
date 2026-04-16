@@ -90,32 +90,46 @@ struct Theme {
     }
     
     // MARK: - Typography
-    /// Typography system using Inter font family
+    /// Typography system using Inter font family (static TTF cuts; PostScript names from Inter 4.1).
     struct Typography {
+        /// PostScript names bundled in `Fonts/*.ttf` — do not use `.weight()` on these (see UIKit descriptor logs).
+        private enum Inter {
+            static let regular = "Inter-Regular"
+            static let medium = "Inter-Medium"
+            static let semiBold = "Inter-SemiBold"
+            static let bold = "Inter-Bold"
+        }
+        
         // MARK: Display & Headings
         /// Large heading (32px) - Used for page titles
-        static let heading1 = Font.custom("Inter", size: 32).weight(.regular)
+        static let heading1 = Font.custom(Inter.regular, size: 32)
         
         /// Medium heading (24px) - Used for section titles
-        static let heading2 = Font.custom("Inter", size: 24).weight(.regular)
+        static let heading2 = Font.custom(Inter.regular, size: 24)
         
         /// Small heading (20px) - Used for card titles
-        static let heading3 = Font.custom("Inter", size: 20).weight(.regular)
+        static let heading3 = Font.custom(Inter.regular, size: 20)
         
         // MARK: Body Text
         /// Standard body text (16px) - Main content text
-        static let body = Font.custom("Inter", size: 16).weight(.regular)
-        static let bodyMedium = Font.custom("Inter", size: 16).weight(.medium)
-        static let bodySemiBold = Font.custom("Inter", size: 16).weight(.semibold)
-        static let bodyBold = Font.custom("Inter", size: 16).weight(.semibold) // Alias for compatibility
+        static let body = Font.custom(Inter.regular, size: 16)
+        static let bodyMedium = Font.custom(Inter.medium, size: 16)
+        static let bodySemiBold = Font.custom(Inter.semiBold, size: 16)
+        static let bodyBold = Font.custom(Inter.semiBold, size: 16) // Alias for compatibility
         
         // MARK: Small Text
         /// Caption text (14px) - Used for labels and descriptions
-        static let caption = Font.custom("Inter", size: 14).weight(.regular)
+        static let caption = Font.custom(Inter.regular, size: 14)
         
         /// Small text (12px) - Used for badges and tiny labels
-        static let small = Font.custom("Inter", size: 12).weight(.regular)
-        static let smallMedium = Font.custom("Inter", size: 12).weight(.medium)
+        static let small = Font.custom(Inter.regular, size: 12)
+        static let smallMedium = Font.custom(Inter.medium, size: 12)
+        
+        // MARK: Onboarding
+        static let onboardingLogoMark = Font.custom(Inter.semiBold, size: 44)
+        static let onboardingTagline = Font.custom(Inter.semiBold, size: 22)
+        static let onboardingQuestionTitle = Font.custom(Inter.bold, size: 30)
+        static let onboardingConfirmationTitle = Font.custom(Inter.semiBold, size: 36)
         
         // MARK: Legacy Compatibility
         /// Legacy names for backward compatibility with existing views

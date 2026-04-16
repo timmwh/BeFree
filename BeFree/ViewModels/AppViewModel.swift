@@ -104,8 +104,28 @@ class AppViewModel: ObservableObject {
         if let index = allSteps.firstIndex(where: { $0.id == step.id }) {
             allSteps[index].isCompleted = true
         }
-        
+
+        // Clean up transient phase marker once the step is truly complete.
+        userProgress.doPhaseStepIds.remove(step.id)
+
         saveProgress()
+    }
+
+    // MARK: - Do-phase resume marker
+
+    /// Remembers that the user has already advanced past the Watch phase
+    /// (i.e. pressed Continue) for this step. Used to resume directly in
+    /// the Do phase when re-opening an unfinished step.
+    func markDoPhaseEntered(_ step: Step) {
+        guard !userProgress.completedStepIds.contains(step.id) else { return }
+        let (inserted, _) = userProgress.doPhaseStepIds.insert(step.id)
+        if inserted {
+            saveProgress()
+        }
+    }
+
+    func hasEnteredDoPhase(_ step: Step) -> Bool {
+        return userProgress.doPhaseStepIds.contains(step.id)
     }
     
     func selectModel(_ model: BusinessModel) {
@@ -127,6 +147,7 @@ class AppViewModel: ObservableObject {
         userProgress.lastCompletedDate = nil
         userProgress.streakDays = []
         userProgress.totalSessionSeconds = 0
+        userProgress.doPhaseStepIds = []
         updateStepsCompletionStatus()
         saveProgress()
     }

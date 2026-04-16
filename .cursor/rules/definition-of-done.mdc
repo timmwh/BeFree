@@ -1,0 +1,32 @@
+---
+description: 
+alwaysApply: true
+---
+
+# Definition of Done
+
+## Builds (agent)
+
+- **Do not** run `xcodebuild`, `xcrun`, or other Xcode CLI build commands unless the **user explicitly asks** for a CLI build in that conversation.
+- **Full compile, signing, and runtime behavior** are verified by the **maintainer in Xcode** (⌘B, Simulator/device). The agent does **not** replace that.
+
+## Lightweight verification (agent)
+
+After **Swift** code changes, run **`read_lints`** on every **edited or newly added** `*.swift` file that was part of the task (touched paths only — not the whole project).
+
+- If **clean:** say so in one short line.
+- If **issues:** report **count + file names** only; do **not** paste long diagnostic dumps. The maintainer can use Xcode/the IDE for details.
+- If the task changed **no Swift files** (e.g. copy, rules, assets only), state **`Diagnostics: N/A (no Swift changes)`** and skip `read_lints`.
+
+After implementing a task, always include a **`Done Check`** section with:
+
+1. **`Build/Test status`** — **Required format:**
+   - Start with **`Diagnostics:`** — outcome of `read_lints` as above (or `N/A` if no Swift changes).
+   - Then **`Full build:`** — **`Not run — verify in Xcode`** (scheme/target **BeFree** when relevant). This reminds the maintainer that lints ≠ full Xcode build.
+2. **`Behavior changes`** — What changed for users or developers (factual, short).
+3. **`Known risks`** — If any (e.g. lints clean but linker/signing not verified).
+4. **`Next step`** — One concrete recommendation (often: Xcode build + smoke-test the touched flow).
+
+The four bullets are always required; extra context is OK if needed.
+
+Keep the whole **`Done Check`** concise and factual.

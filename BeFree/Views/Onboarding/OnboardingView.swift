@@ -258,14 +258,14 @@ private struct WelcomePageView: View {
             Spacer().frame(height: 28)
 
             Text("BeFree")
-                .font(.custom("Inter", size: 44).weight(.semibold))
+                .font(Theme.Typography.onboardingLogoMark)
                 .foregroundColor(Theme.Colors.textPrimary)
                 .tracking(-1)
 
             Spacer().frame(height: Theme.Spacing.md)
 
             Text("Build your online business.")
-                .font(.custom("Inter", size: 22).weight(.semibold))
+                .font(Theme.Typography.onboardingTagline)
                 .foregroundColor(Theme.Colors.textPrimary)
                 .multilineTextAlignment(.center)
 
@@ -299,7 +299,7 @@ private struct ExperienceQuestionView: View {
             // Question
             VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
                 Text("What's your\nstarting point?")
-                    .font(.custom("Inter", size: 30).weight(.bold))
+                    .font(Theme.Typography.onboardingQuestionTitle)
                     .foregroundColor(Theme.Colors.textPrimary)
                     .lineSpacing(2)
 
@@ -348,7 +348,7 @@ private struct GoalQuestionView: View {
             // Question
             VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
                 Text("What's your\nprimary goal?")
-                    .font(.custom("Inter", size: 30).weight(.bold))
+                    .font(Theme.Typography.onboardingQuestionTitle)
                     .foregroundColor(Theme.Colors.textPrimary)
                     .lineSpacing(2)
 
@@ -440,7 +440,7 @@ private struct MatchPageView: View {
                     // Header
                     VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
                         Text("Your perfect\nmatch")
-                            .font(.custom("Inter", size: 30).weight(.bold))
+                            .font(Theme.Typography.onboardingQuestionTitle)
                             .foregroundColor(Theme.Colors.textPrimary)
                             .lineSpacing(2)
 
@@ -538,7 +538,7 @@ private struct ModelPickerPageView: View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
                 Text("Choose your path")
-                    .font(.custom("Inter", size: 30).weight(.bold))
+                    .font(Theme.Typography.onboardingQuestionTitle)
                     .foregroundColor(Theme.Colors.textPrimary)
 
                 Text("Each model has its own videos, tasks, and foundation steps.")
@@ -651,7 +651,7 @@ private struct ConfirmationPageView: View {
             Spacer().frame(height: Theme.Spacing.xl)
 
             Text("You're ready.")
-                .font(.custom("Inter", size: 36).weight(.semibold))
+                .font(Theme.Typography.onboardingConfirmationTitle)
                 .foregroundColor(Theme.Colors.textPrimary)
                 .tracking(-0.5)
 

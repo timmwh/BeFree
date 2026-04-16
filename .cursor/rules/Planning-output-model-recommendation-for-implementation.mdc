@@ -20,6 +20,7 @@ Provide all of the following:
 3. `Fallback model (cost efficient)`  
    - Recommend one cheaper alternative.
    - State the tradeoff in one sentence.
+(Only State Fallback model when the primary model isn't Composer/Auto)
 
 4. `MAX mode guidance`  
    - Explicitly state whether MAX mode is needed.

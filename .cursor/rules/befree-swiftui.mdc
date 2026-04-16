@@ -5,7 +5,8 @@ alwaysApply: true
 
 # BeFree (SwiftUI)
 
-- **Stack:** SwiftUI iOS app; Xcode project `BeFree.xcodeproj`, scheme/target **BeFree**. Build and run in Xcode or use the workspace **Build** task (`xcodebuild`) for compile checks.
+- **Stack:** SwiftUI iOS app; Xcode project `BeFree.xcodeproj`, scheme/target **BeFree**. **Maintainer:** build and run in Xcode (⌘B / Simulator); optional `xcodebuild` from terminal or a workspace Build task for local compile checks. **Agent:** do **not** run `xcodebuild` unless the user explicitly asks (see `definition-of-done.mdc`).
+- **Verification (agent):** After Swift edits, run **`read_lints`** on touched `*.swift` files only; report briefly in **`Done Check`**. Full compile remains **Xcode** — see `definition-of-done.mdc`.
 - **Editor:** Install workspace-recommended extension **Swift** (`swiftlang.swift-vscode`) for language support, then reload the window if needed.
 
 ## Layout
