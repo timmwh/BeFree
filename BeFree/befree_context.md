@@ -78,7 +78,7 @@ Both models have completely different video content, tasks, and outputs across a
 Foundation Roadmap (10 Steps — Video + Task format)
 
 Each step follows a strict format:
-	•	One curated YouTube video (embedded in-app via WKWebView — no external app switching, no downloads)
+	•	One curated YouTube video (embedded in-app via WKWebView — no external app switching)
 	•	**While watching:** short bullet points that tell the user **what to pay attention to in the video** so the task afterwards is doable — this block is **required** for any step that includes a video
 	•	One direct action task derived from the video
 	•	One expected output: what the user will have produced by the end
