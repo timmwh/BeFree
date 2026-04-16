@@ -1,0 +1,10 @@
+---
+alwaysApply: true
+---
+
+# `befree_context.md` — ausschließlich Agent-/Produktkontext
+
+- [`BeFree/befree_context.md`](BeFree/befree_context.md) dient **nur** als **vollwertiger Produkt- und App-Kontext** für den Agenten (Vision, MVP, Flows, Copy-Richtung, Scope).
+- **Nicht** dafür nutzen: persönliche Notizen, Cursor-/Kosten-Policies, Dev-Tagebuch, Meeting-Minutes, experimentelle Brainstorms, oder alles, was **nicht** direkt die **Produktdefinition von BeFree** ist.
+- Wenn der Nutzer Meta-Informationen festhalten will: **eigenes Dokument außerhalb dieses Files** (z. B. lokale Notizen, separates Repo-Doc), **nicht** in `befree_context.md` mischen.
+- Beim Bearbeiten von `befree_context.md`: Inhalt **kompakt und agent-tauglich** halten; keine irrelevanten Abschnitte hinzufügen, die den Produktkontext verwässern.

@@ -1,0 +1,12 @@
+---
+alwaysApply: true
+---
+
+# SwiftUI Safety Checklist
+For UI-related changes, verify and report briefly:
+- State flow correctness (loading/success/error)
+- Navigation behavior
+- Dark mode compatibility
+- Dynamic Type / accessibility text scaling
+- Empty/loading/error states
+If any item is not checked, state it explicitly.

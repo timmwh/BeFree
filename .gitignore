@@ -61,8 +61,10 @@ iOSInjectionProject/
 ## macOS
 .DS_Store
 
-# Cursor IDE
-.cursor/
+# Cursor IDE — version project rules only; keep other .cursor/ data local
+.cursor/*
+!.cursor/rules/
+!.cursor/rules/**
 
 # API Keys (never commit)
 BeFree/Config.swift

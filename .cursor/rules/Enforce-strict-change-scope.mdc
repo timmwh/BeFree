@@ -1,0 +1,10 @@
+---
+alwaysApply: true
+---
+
+# Change Scope Guardrail
+
+Only implement what was requested.
+Do not perform drive-by refactors, renames, file moves, or architecture changes unless explicitly asked.
+
+If a broader change is clearly beneficial, propose it first in a few bullets and wait for approval.

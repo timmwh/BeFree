@@ -1,0 +1,34 @@
+---
+description: 
+alwaysApply: true
+---
+
+# BeFree (SwiftUI)
+
+- **Stack:** SwiftUI iOS app; Xcode project `BeFree.xcodeproj`, scheme/target **BeFree**. Build and run in Xcode or use the workspace **Build** task (`xcodebuild`) for compile checks.
+- **Editor:** Install workspace-recommended extension **Swift** (`swiftlang.swift-vscode`) for language support, then reload the window if needed.
+
+## Layout
+
+- **App entry:** `BeFree/BeFreeApp.swift` — root `App`, `AppViewModel` as `@StateObject`, `environmentObject` for the tree.
+- **Views:** `BeFree/Views/` — screens, `Components/` for reusable UI.
+- **View models:** `BeFree/ViewModels/`.
+- **Models:** `BeFree/Models/`.
+- **Services:** `BeFree/Services/`.
+- **Design tokens:** `BeFree/Utilities/Theme.swift` — use `Theme.Colors`, typography, spacing, and related helpers instead of hardcoding colors that duplicate the design system.
+- **Shared utilities:** `BeFree/Utilities/Extensions.swift` and siblings.
+
+## Product context
+
+- Product vision and MVP scope live in `BeFree/befree_context.md`. Prefer aligning copy and flows with that document when changing user-facing behavior.
+
+## Secrets and config
+
+- **Never** commit API keys or real `Config.swift` secrets. Template only: `BeFree/Config.template.swift`. Real keys belong in a local `Config.swift` (gitignored). Do not paste keys into chat or rules.
+
+## Code style
+
+- Match existing file headers, `MARK` sections, and naming in neighboring files.
+- Prefer small, focused views and reuse existing components (`PrimaryButton`, cards, etc.) before adding new generic UI.
+- Keep diffs minimal; avoid drive-by refactors unrelated to the task.
+- Do not enable or assume **format-on-save** for Swift unless the project adds SwiftFormat/SwiftLint; stay consistent with Xcode’s default formatting unless tooling is introduced.

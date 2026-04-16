@@ -1,0 +1,30 @@
+---
+description: 
+alwaysApply: true
+---
+
+# Model Gate before Coding
+
+When planning a feature implementation, always include a final section named `Model Recommendation`.
+
+## Required output in `Model Recommendation`
+Provide all of the following:
+
+1. `Primary model (quality-first)`  
+   - Recommend the best model for implementation quality first.
+   - Assume output quality is more important than cost unless the user explicitly says otherwise.
+
+2. `Why this model`  
+   - 2-4 short bullet points tied to task complexity (architecture, debugging depth, multi-file impact, refactor risk, reliability).
+
+3. `Fallback model (cost efficient)`  
+   - Recommend one cheaper alternative.
+   - State the tradeoff in one sentence.
+
+4. `MAX mode guidance`  
+   - Explicitly state whether MAX mode is needed.
+   - Default: MAX OFF.
+   - Use MAX only if context is very large (e.g., near/over 200k context, many large files, or long multi-step architecture tasks).
+
+## Formatting rule
+For every plan, place `Model Recommendation` directly after the TODO list.
