@@ -2,256 +2,363 @@ BeFree – Product Vision & MVP Scope
 
 **Document convention:** Text in squiggly brackets {like this} marks ideas or requirements that are not final — they still need product/design evaluation before we commit to them.
 
-BeFree is Duolingo for online business.
+---
 
-The knowledge to build a profitable online business is free — it's on YouTube, in blog posts, in Reddit threads. The problem isn't access to knowledge. The problem is that nobody tells you which video to watch first, what to do immediately after, and how to keep going the next day.
+## 0. One-line positioning
 
-BeFree solves this. It takes the best free content on the internet, structures it into a daily execution system, and makes sure you actually do the work instead of just watching more videos.
+**BeFree is the execution interface for starting an online business.**
+It takes your situation, recommends the right model, and turns internet and AI knowledge into the one next step you can actually do today.
 
-BeFree is designed to feel like:
-	•	Duolingo → one action per day, fast feedback loop, streak-driven consistency
-	•	Cal AI → minimal input, maximum output, fast to the value
-	•	Apple Fitness → clear sessions, completion flow, motivating progress
-	•	Quittr / Umax → focused on one outcome, nothing unnecessary
+Or, in the Cal AI framing:
 
-BeFree exists to solve one problem:
-Beginners don't fail because they lack information. They fail because they never start, never stay consistent, and never know what to do next.
+- **Cal AI** is not "AI nutrition knowledge" — it's a better interface for calorie-tracking AI.
+- **BeFree** is not "AI business advice" — it's a better interface for online-business execution AI.
 
-⸻
+BeFree is **Duolingo for online business**, but what that really means is: a daily execution system — not a course, not a content library, not a chatbot.
 
-⭐ 1. Core Vision
+---
 
-The long-term vision of BeFree is to become the operating system for building an online business — a platform that combines the world's best free educational content with AI-powered execution tools that do the hard work for you.
+## 1. The real problem
 
-In the full vision, BeFree will offer:
-	•	Curated video + task roadmaps for every major online business model
-	•	AI that does work for the user: finding nearby prospects, generating outreach scripts, validating niches
-	•	Dynamic roadmaps that adapt to user speed and real-world results
-	•	Community accountability tied to the roadmap — connect with people at the same step
-	•	Results-based milestones: "users who complete this step typically land their first client within 3 weeks"
-	•	Analytics: time invested, steps completed, estimated business readiness
-	•	Monetization through a subscription tier
+Beginners who want to start an online business do **not** primarily have an information problem.
+The knowledge is free — on YouTube, in blog posts, in Reddit threads, and inside every major LLM.
 
-The end goal:
-👉 BeFree becomes the one app you need to go from complete beginner to running a profitable online business — without paying for a single course.
+The actual problems are:
 
-⸻
+- **Clarity** — "Which business model even fits me?"
+- **Execution** — "What exactly do I do right now, today?"
+- **Follow-through** — "How do I keep going tomorrow, and the day after?"
 
-⭐ 2. What the MVP Must Achieve (Primary Goal)
+An LLM can answer all three in a chat window. But a chat window is a bad interface for consistent daily execution. It has no structure, no streaks, no sessions, no completion loop, no memory of your plan as a *thing that exists*.
 
-The MVP delivers one thing: the core execution loop.
+BeFree is the product layer that turns "AI can tell you what to do" into "you actually do it, day after day."
 
-Open app → Watch the right video → Do the one task → Mark done → Come back tomorrow
+---
 
-The user should never have to ask "what should I do next?" The answer is always one tap away.
+## 2. Core product principle
 
-The MVP focuses on **foundational steps to get started** with the chosen business model — structured as video + task, with content tailored to that model (including a dedicated Foundation track per model, plus follow-on steps where we already guide first real-world actions). It is intentionally **not** a narrow "exactly N steps and nothing else" spec; scope stays execution-first.
+**AI tells users what to do. BeFree turns that into a structured, motivating, low-friction execution flow.**
 
-The user should feel:
-	•	"I don't need to research anything — someone already found the best video."
-	•	"I know exactly what to do right now."
-	•	"I'm making real progress, not just learning."
-	•	"I'm not paying for knowledge — I'm paying for structure and execution."
+The mechanism behind that is **action compression**: BeFree takes the overwhelming complexity of "start an online business" — every decision, every tab, every YouTube rabbit hole — and compresses it into the **smallest useful next action**. One step. One video. One task. Everything larger than that is deferred, hidden, or queued. That compression is the real product.
 
-⸻
+Everything else in this document follows from that principle.
 
-⭐ 3. MVP Feature Scope
+---
 
-✅ Included in MVP
+## 3. Product Architecture
 
-Business Models
+BeFree is built on three layers. Keeping them separate is what makes the product defensible and MVP-realistic.
 
-The MVP launches with 2 business models:
-	•	AAA (AI Automation Agency) — the highest-growth B2B model in 2026, appeals to tech-forward users who want to build a premium service business
-	•	TikTok Shop Affiliate — the fastest-growing consumer income model in 2026, zero startup capital, first commission possible within days
+### Layer 1 — Stable Spine (what BeFree controls)
 
-These two models were selected based on deep market research (April 2026): both are in their demand peak, both have strong YouTube educator communities, and they serve two distinct user personas — making the onboarding "AI-powered perfect match" framing feel genuinely personalized. *(The first MVP uses transparent recommendation rules; deeper LLM-based matching can come later — the product copy can stay "perfect match" as marketing.)*
+A controlled, hardcoded roadmap **schema** that BeFree owns. Most healthy online-business journeys follow the same shape, so the spine is model-agnostic:
 
-Recommendation logic:
-	•	Complete beginners or side-income seekers → TikTok Shop Affiliate (lower barrier, faster first results)
-	•	Experienced users or those building a full business / replacing their job → AAA (higher income ceiling, B2B focus)
+- **Match** — choose the right business model for the user
+- **Foundation** — understand how the model works and what success actually looks like
+- **Setup** — prepare the minimum tools, accounts, and environment needed to begin
+- **Position** — define niche, target customer, and/or offer clearly enough to act
+- **Launch** — take the first real-world execution actions
+- **Iterate** — learn from results and continue with the next best step
 
-Both models have completely different video content, tasks, and outputs across all 10 Foundation steps.
+Every business model BeFree ever supports plugs into this same spine. This is the conceptual backbone of the product. It does not change per user and is not generated by AI.
 
-⸻
+### Layer 2 — AI Personalization Layer (what AI shapes *on top of* the spine)
 
-Foundation Roadmap (10 Steps — Video + Task format)
+AI does **not** invent the roadmap. AI personalizes the experience **within** the fixed schema. The layer's full vocabulary:
 
-Each step follows a strict format:
-	•	One curated YouTube video (embedded in-app via WKWebView — no external app switching)
-	•	**While watching:** short bullet points that tell the user **what to pay attention to in the video** so the task afterwards is doable — this block is **required** for any step that includes a video
-	•	One direct action task derived from the video
-	•	One expected output: what the user will have produced by the end
+- **Model recommendation** — which business model fits this user *(MVP: rule-based selection)*
+- **Recommendation explanation** — short, user-specific reasoning for *why* this model *(MVP)*
+- **AI coach guidance** — in-step chat grounded in the current step + model + user profile *(MVP)*
+- **Task variants** — choose between pre-authored variants of a step *(V1.1)*
+- **Examples** — swap the example shown inside a step for one closer to the user's context *(V1.1)*
+- **Skip logic** — mark clearly non-applicable steps as optional/skipped, with a reason *(V1.1)*
 
-Example — Step 3 (AAA): Analyze Your Target Audience
-	•	VIDEO: "How to Profile Your Ideal AAA Client" — 15 min
-	•	TASK: Define your ideal client (business size, team structure, tech stack). List their top 3 most painful manual workflows.
-	•	OUTPUT: A written client profile you'll use to guide every pitch and outreach message.
+**Bounded rules — true for every version of BeFree, not just MVP:**
 
-Example — Step 2 (TikTok Shop): Set Up Your TikTok Creator Account
-	•	VIDEO: "How to Apply for TikTok Shop Affiliate and Get Approved Fast" — 12 min
-	•	TASK: Switch your TikTok account to Creator mode, write a clear niche bio, and apply for TikTok Shop Affiliate access.
-	•	OUTPUT: An active TikTok creator account with a submitted affiliate application.
+- AI **never** generates step titles, videos, phases, or the overall order.
+- Task variants, when introduced, are **limited to pre-authored variants** (e.g. beginner vs experienced). No on-the-fly rewriting of tasks.
+- Skip logic applies **only to clearly non-applicable setup/tooling steps** (e.g. "skip setting up TikTok account if the user already has one"). It does not skip core foundation or position work.
+- **AI does not alter roadmap order in MVP.** Order is spine + authored. Adaptive ordering is a V2.0 decision, not a V1.1 one.
+- Everything the AI does is either a **choice between things BeFree already owns** or **short, low-risk copy** (explanations, coach replies).
 
-Both models have 10 Foundation steps. Step structure (titles, tasks, outputs) is specific to each model — they do not share universal step titles.
+These rules are what make "bounded AI" a real engineering constraint, not marketing.
 
-⸻
+### Layer 3 — Execution UX Layer (where BeFree actually wins)
 
-{Results Timeline — idea to evaluate: shown on the Roadmap as milestone markers at key steps, for example:
-	•	After Step 3: "You understand your market better than 90% of beginners who never research their audience."
-	•	After Step 5: "You have a niche, a target client profile, and a clear value proposition."
-	•	After Step 10: "You have everything you need to land your first client. Most users send their first outreach within 48 hours of completing this step."
+This is the product advantage — the thing a ChatGPT window will never do well. It's where **action compression** becomes physical:
 
-These milestones would set expectations and motivation; exact copy and placement need validation.}
+- One next step, always visible
+- One clear task per step
+- Fast feedback loop (Mark Done → streak increases → success animation)
+- Low overwhelm — nothing extra on screen
+- Visible progress and momentum
+- Consistency mechanics (streak, daily return, later: widgets + notifications)
 
-⸻
+If BeFree nails only Layer 3, it still wins against "just use ChatGPT."
 
-Onboarding Flow
-	•	Welcome screen
-	•	2-question questionnaire (experience level + primary goal)
-	•	AI-powered "Perfect Match" model recommendation
-	•	"See both models" option
-	•	Model selection confirmation
+---
 
-⸻
+## 4. Stable Spine vs Dynamic Layer — what is fixed, model-specific, user-specific
 
-Dashboard
-	•	Greeting
-	•	Streak bar (7 days)
-	•	"Next Step" card with one-tap Start
+A clean distinction to prevent scope drift:
 
-The dashboard is intentionally minimal. The next action is always the most prominent element on screen.
+**Fixed (never changes per user or per model)**
 
-⸻
+- Roadmap phase architecture (Match → Foundation → Setup → Position → Launch → Iterate)
+- Core execution loop (open → next step → do → mark done → return)
+- Design principles (minimal, one-thing-at-a-time, iOS-native, calm)
+- Streak + completion mechanics
 
-Step Detail Screen
-	•	Phase chip + Step title
-	•	Embedded YouTube video (WKWebView, full-width, plays in-app)
-	•	**While watching** — required bullets: what to focus on in the video for this task
-	•	Task description (what to do after / alongside the video)
-	•	Expected output ("By the end of this step you will have: [X]")
-	•	"Ask your coach" button (AI coach, context-aware)
-	•	"Mark as Done" button — no confirmation, instant completion with a success animation
+**Model-specific (authored by us, per business model)**
 
-No timer. No subtask checklist. No extra resource links. One video, one focused watch guide, one task, one completion action.
+- Step content (titles, descriptions)
+- Curated YouTube videos
+- Tasks and expected outputs
+- Example copy tailored to the model
 
-⸻
+**User-specific (AI- or rules-personalized)**
 
-AI Step Coach
-	•	Accessible via "Ask your coach" on the Step Detail screen
-	•	Opens a bottom sheet chat interface
-	•	Context-aware: current step, task text, and business model {richer grounding in actual video / transcript content is most likely a later improvement}
-	•	Powered by OpenAI Chat Completions API (direct from app, no backend required)
-	•	Responses are concise, actionable, and encouraging
+- Which model is recommended *(MVP)*
+- The explanation of *why* this model *(MVP)*
+- AI coach responses *(MVP)*
+- Which variant of a step the user sees *(V1.1)*
+- Example shown inside a step *(V1.1)*
+- Difficulty / depth of task wording *(V1.1)*
+- Which steps are marked optional/skipped *(V1.1)*
 
-⸻
+MVP keeps this distinction strict. Anything that isn't in "user-specific" stays authored.
 
-Roadmap Screen
-	•	Foundation section: all foundation steps with completion state
-	•	{Results Timeline milestones at key steps — see parenthetical section above; still under evaluation}
-	•	Later phases (Growth, Scale) shown but locked — coming soon
+---
 
-⸻
+## 5. Roadmap Logic
 
-Notifications + Widgets — to build after MVP core: daily push at a configurable time, e.g. "Your next step is waiting. 15 minutes today."; home/lock screen widget with current step + streak. These reinforce the consistency loop / Duolingo-style mechanic.
+Every business model in BeFree is expressed as a set of **authored steps** that each belong to one phase in the spine. A step is always:
 
-⸻
+- One curated YouTube video (embedded in-app via `WKWebView` — no external app switching)
+- **While watching** — required bullets: what to focus on in the video for this task
+- One direct action task derived from the video
+- One expected output: what the user will have produced by the end
 
-Settings
-	•	View and switch business model (TikTok Shop ↔ AAA)
-	•	Reset progress (with confirmation)
+The spine guarantees the user experience feels consistent across models; the authored content guarantees quality; the personalization layer makes it feel like *their* plan.
 
-⸻
+**A note on the Iterate phase.** Iterate is part of the spine because every real business journey has one — but in the MVP it is intentionally thin. Iterate is represented through **step completion, coach reflection, and roadmap continuity** (the roadmap keeps giving the user the next reasonable step after Launch), **not** through a fully adaptive feedback engine that rewrites the plan based on outcomes. A real adaptive Iterate layer (performance-based branching, dynamic unlocking, re-engagement logic) is a V2.0 decision, deliberately not an MVP one.
 
-Monetization — to define and implement after MVP core: e.g. trial, monthly/yearly pricing, paywall timing.
+Example — Foundation phase, AAA:
+- VIDEO: "How to Profile Your Ideal AAA Client" — 15 min
+- TASK: Define your ideal client (business size, team structure, tech stack). List their top 3 most painful manual workflows.
+- OUTPUT: A written client profile you'll use to guide every pitch and outreach message.
 
-⸻
+Example — Setup phase, TikTok Shop:
+- VIDEO: "How to Apply for TikTok Shop Affiliate and Get Approved Fast" — 12 min
+- TASK: Switch to Creator mode, write a clear niche bio, apply for TikTok Shop Affiliate access.
+- OUTPUT: An active TikTok creator account with a submitted affiliate application.
 
-Persistence
+{Results Timeline — idea to evaluate: show milestone markers on Roadmap, e.g. "After Position phase: you have a niche, target client profile, and a clear value proposition." Exact copy/placement TBD.}
 
-Local saving via UserDefaults:
-	•	Selected business model
-	•	Completed steps
-	•	Streak + streak days
-	•	Notification preference — when notifications ship
+---
 
-⸻
+## 6. MVP Scope
 
-❌ Not in MVP
+The MVP delivers one thing: the **core execution loop**, powered by the spine, with a light personalization layer.
 
-These belong to later versions:
-	•	AI client-finder (location-based prospect discovery)
-	•	AI-generated outreach scripts and niche reports
-	•	Community / cohorts per step
-	•	AI modifying the roadmap dynamically
-	•	More business models (Growth OS, Brandscaling, etc.)
-	•	Calendar sync
-	•	Weekly analytics dashboard
-	•	Later roadmap phases (Growth, Scale) with content
+Open app → see the right next step → do the one task → mark done → come back tomorrow.
 
-⸻
+### ✅ In MVP
 
-⭐ 4. The Core Loop (What the MVP Optimizes For)
+**Business Models (2)**
 
-	1.	Open BeFree
-	2.	See today's next step
-	3.	Watch the curated video in-app
-	4.	Do the one task it describes
-	5.	Mark as Done — success animation
-	6.	Streak increases
-	7.	Notification tomorrow — when implemented: e.g. "Come back. 15 minutes. Your next step is ready.
+- **AAA (AI Automation Agency)** — highest-growth B2B model in 2026; tech-forward users building a premium service business.
+- **TikTok Shop Affiliate** — fastest-growing consumer income model in 2026; zero startup capital; first commission possible within days.
+
+Both models plug into the same spine and are authored with their own content across Foundation → Launch phases.
+
+**Onboarding (the Match phase, productized)**
+
+- Welcome screen
+- Thorough Onboarding questionnaire
+- Model recommendation — **rule-based in v1**, with a short AI-generated personalized explanation of *why* this model fits the user
+- "See all models" option
+- Model selection confirmation
+
+Recommendation rule (v1):
+- Complete beginners or side-income seekers → TikTok Shop Affiliate (lower barrier, faster first results)
+- Experienced users or those building a full business / replacing their job → AAA (higher income ceiling, B2B focus)
+
+The onboarding is intentionally framed as "AI-powered perfect match" — because the *explanation layer* is AI-generated even when the *selection rule* is deterministic. This is honest: we're using AI where it adds value (personalization of copy) and rules where they add reliability (model choice).
+
+**Authored Roadmap per model**
+
+Each model has authored steps across the spine phases (primarily Foundation, Setup, Position, Launch). We do not commit to "exactly N steps"; we commit to **the user always having a clear next step across the spine**.
+
+**Personalization in MVP (bounded AI)**
+
+Only two AI touchpoints are in MVP:
+
+- AI-generated recommendation explanation after onboarding
+- AI Coach inside each step (see below)
+
+That is deliberate. No free-form AI roadmap generation. No AI inventing steps, videos, or phases. No AI reordering. No AI-chosen task variants or examples in MVP — those are V1.1 features, tracked under §9.
+
+**Dashboard**
+
+- Greeting
+- Streak bar (7 days)
+- "Next Step" card with one-tap Start
+
+Minimal by design. The next action is always the most prominent element on screen.
+
+**Step Detail Screen**
+
+- Phase chip (Foundation / Setup / …) + Step title
+- Embedded YouTube video (`WKWebView`, full-width, plays in-app)
+- **While watching** — required focus bullets
+- Task description (what to do after / alongside the video)
+- Expected output ("By the end of this step you will have: [X]")
+- "Ask your coach" button (AI coach, context-aware)
+- "Mark as Done" — no confirmation, instant completion, success animation
+
+No timer. No subtask checklist. No extra resource links. One video, one watch guide, one task, one completion action.
+
+**AI Step Coach**
+
+- Accessible via "Ask your coach" on the Step Detail screen
+- Opens a bottom sheet chat interface
+- Context-aware: current step, task text, business model, and user onboarding profile {richer grounding in video/transcript is a later improvement}
+- Powered by OpenAI Chat Completions API (direct from app, no backend required in MVP)
+- Responses: concise, actionable, encouraging
+
+**Roadmap Screen**
+
+- Phase-grouped view of all steps with completion state
+- Later spine phases (later Iterate content, additional models) shown but locked — "coming soon"
+- {Results Timeline milestones — TBD}
+
+**Settings**
+
+- View and switch business model (TikTok Shop ↔ AAA)
+- Reset progress (with confirmation)
+
+**Persistence (UserDefaults)**
+
+- Selected business model
+- Completed steps
+- Streak + streak days
+- Onboarding profile (experience + goal) — used by the personalization layer
+- Notification preference — when notifications ship
+
+### ❌ Not in MVP
+
+These belong to later versions and should be resisted during MVP work:
+
+- **Fully dynamic AI-generated roadmaps** — the spine stays authored
+- **AI-chosen task variants / examples** based on the onboarding profile — planned for V1.1, not MVP
+- **AI-driven skip logic** — planned for V1.1, not MVP
+- **AI-driven reordering of the roadmap** — not before V2.0, and only within the spine
+- AI client-finder (location-based prospect discovery)
+- AI-generated outreach scripts / niche reports as standalone tools
+- Community / cohorts per step
+- Additional business models beyond the two in §6
+- Agentic backend workflows
+- Calendar sync
+- Weekly analytics dashboard
+- Monetization system (to be defined post-MVP-core)
+- Push notifications + widgets (to build right after MVP core)
+
+---
+
+## 7. The Core Loop (what the MVP optimizes for)
+
+1. Open BeFree
+2. See today's next step
+3. Watch the curated video in-app
+4. Do the one task it describes
+5. Mark as Done — success animation
+6. Streak increases
+7. Notification tomorrow — when implemented: "Come back. 15 minutes. Your next step is ready."
 
 Everything else is secondary.
 
-⸻
+---
 
-⭐ 5. Design Principles
+## 8. Design Principles
 
 BeFree must feel:
-	•	Fast — **most** steps should land in roughly **15–30 minutes**, but this is a guideline, not a hard cap. Early Foundation tasks should skew **short** for a quick feedback loop; as users move into **Growth** and **Scale**, tasks can and should **take longer**, because execution at that stage is deeper real-world work, not a daily micro-drill.
-	•	Minimal — one thing at a time, always
-	•	Clear — the next action is never ambiguous
-	•	Motivating — progress feels real and visible
-	•	iOS-native — smooth, premium, familiar
-	•	Calm — removes overwhelm rather than adding features
 
-⸻
+- **Fast** — most steps land in roughly **15–30 minutes**. Early Foundation/Setup tasks skew short for a tight feedback loop. Later phases (Position, Launch, Iterate) can take longer because execution at that stage is deeper real-world work, not a daily micro-drill.
+- **Minimal** — one thing at a time, always
+- **Clear** — the next action is never ambiguous
+- **Motivating** — progress feels real and visible
+- **iOS-native** — smooth, premium, familiar
+- **Calm** — removes overwhelm rather than adding features
 
-⭐ 6. Post-MVP Roadmap
+---
 
-V1.1 — Community Layer
-	•	Step-based community: users at the same step can message and support each other
-	•	Cohort groups: weekly batches of users starting together
-	•	This is the feature that turns retention from "I have a streak" to "people are counting on me"
+## 9. MVP vs Post-MVP AI Evolution
 
-V1.2 — AI Client-Finder
-	•	Location permission → AI surfaces nearby businesses matching your niche profile
-	•	One tap to add a business to your prospect list
-	•	Removes the most friction-heavy step in the Foundation roadmap
+A deliberate progression, so we don't ship the wrong thing too early.
 
-V1.3 — More Business Models
-	•	Growth Operating, Freelance Brandscaling, Dropshipping, SaaS
-	•	Each follows the same Video + Task format — content is the cost, not the engineering
+**MVP — bounded AI, authored spine**
+- Rule-based model recommendation + AI-generated explanation
+- Authored steps per model, same spine for every model
+- AI Coach inside each step
+- No AI reordering, no AI-chosen task variants, no AI-chosen examples
 
-V1.4 — AI Execution Tools
-	•	AI generates your outreach script based on your niche and value proposition
-	•	AI validates your niche: "here's what the data says about demand in your area"
-	•	AI writes your value proposition draft after Step 5
+**V1.1 — deeper personalization, still bounded**
+- LLM-based model matching (replaces the rule while keeping the "perfect match" UX)
+- AI-chosen task variants (beginner vs experienced, pre-authored)
+- AI-chosen examples inside a step, from a pre-authored pool
+- Skip logic for clearly non-applicable setup steps (e.g. user already has the required tool/account)
+- Richer coach grounding (step notes, transcripts)
 
-V2.0 — Dynamic AI Roadmap
-	•	Roadmap adapts based on user speed, feedback, and real results
-	•	If a user completes 3 steps in a day, AI unlocks bonus steps
-	•	If a user hasn't opened the app in 5 days, AI adjusts the plan and sends a re-engagement sequence
+**V1.2 — Community Layer**
+- Step-based community: users on the same step can message and support each other
+- Cohort groups: weekly batches starting together
+- Turns retention from "I have a streak" to "people are counting on me"
 
-⸻
+**V1.3 — More Business Models**
+- Growth Operating, Freelance Brandscaling, Dropshipping, SaaS
+- Each plugs into the same spine — content is the cost, not engineering
 
-⭐ 7. One-Sentence Summary
+**V1.4 — AI Execution Tools**
+- AI outreach script generation based on user niche + value proposition
+- AI niche validation ("here's what the data says about demand in your area")
+- AI drafts the value proposition after the Position phase
 
-BeFree is Duolingo for online business — it takes the best free content on the internet and turns it into a daily execution system so you actually build your business instead of just learning about it.
+**V2.0 — Dynamic AI Roadmap (carefully)**
+- Roadmap adapts to user speed, feedback, and real results
+- Complete 3 steps in a day → AI unlocks bonus steps
+- Inactive for 5 days → AI adjusts the plan and triggers a re-engagement sequence
+- Still inside the spine. Still bounded. Just more adaptive.
 
-⸻
+---
 
-⭐ 8. Figma Reference
+## 10. What BeFree is and isn't
+
+BeFree **is**:
+
+- An execution system for starting an online business
+- A clarity engine — turning "I want to start something" into "this is my next step"
+- An **action-compression product** — it takes an overwhelming goal and compresses it into the smallest useful next action, every single day
+- A structured interface for AI-driven business guidance
+- Best free content + authored structure + bounded AI personalization + a great execution UX
+
+BeFree **is not**:
+
+- A course or course marketplace
+- A content library
+- A generic AI chatbot
+- A fully dynamic, AI-generated roadmap generator (at least not in MVP)
+- A "learn about business" app — it's a "do the business" app
+
+---
+
+## 11. One-sentence summary
+
+**BeFree is the execution layer for starting an online business — it takes the best free content and bounded AI personalization, turns them into a daily next-step system on a stable roadmap spine, and makes sure you actually do the work instead of just learning about it.**
+
+---
+
+## 12. Figma Reference
 
 This project uses the following Figma file as reference for all screens and components:
 
