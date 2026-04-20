@@ -17,12 +17,13 @@ struct StepDetailView: View {
 
     /// Two-phase flow: Watch (video + notes) → Do (task + coach).
     /// The step is only marked completed from the Do phase.
-    enum Phase {
+    /// Named `WatchDoPhase` to avoid shadowing the business `Phase` enum.
+    enum WatchDoPhase {
         case watch
         case doing
     }
 
-    @State private var phase: Phase = .watch
+    @State private var phase: WatchDoPhase = .watch
     @State private var showSuccess = false
     @State private var showCoachSheet = false
 
@@ -115,7 +116,7 @@ struct StepDetailView: View {
     private var header: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.md) {
             HStack(spacing: Theme.Spacing.sm) {
-                PhaseChip(phase: step.phase.toBusinessPhase)
+                PhaseChip(phase: step.phase)
                 phaseBadge
             }
 
@@ -371,7 +372,7 @@ private struct SectionLabel: View {
 
 #Preview {
     NavigationStack {
-        StepDetailView(step: DataService.shared.getFoundationSteps(for: "AAA")[0])
+        StepDetailView(step: DataService.shared.getAuthoredSteps(for: "AAA")[0])
             .environmentObject(AppViewModel())
     }
 }

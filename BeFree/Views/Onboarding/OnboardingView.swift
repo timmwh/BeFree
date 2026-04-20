@@ -205,26 +205,38 @@ struct OnboardingContinueButton: View {
     }
 }
 
-// MARK: - Questionnaire Data
+// MARK: - Questionnaire display labels
+//
+// The persisted enums live in `UserProgress.swift` with stable raw values
+// (`beginner`, `someExperience`, …). These extensions only supply the
+// human-readable copy used by the onboarding UI.
 
-enum ExperienceLevel: String, CaseIterable {
-    case beginner = "Complete beginner"
-    case tried = "Tried a few things"
-    case experienced = "I have experience"
+extension ExperienceLevel {
+    var title: String {
+        switch self {
+        case .beginner:       return "Complete beginner"
+        case .someExperience: return "Tried a few things"
+        case .experienced:    return "I have experience"
+        }
+    }
 
     var subtitle: String {
         switch self {
-        case .beginner:    return "Starting completely from zero"
-        case .tried:       return "Explored but haven't succeeded yet"
-        case .experienced: return "Ready to scale what I know"
+        case .beginner:       return "Starting completely from zero"
+        case .someExperience: return "Explored but haven't succeeded yet"
+        case .experienced:    return "Ready to scale what I know"
         }
     }
 }
 
-enum BusinessGoal: String, CaseIterable {
-    case sideIncome   = "Earn extra income"
-    case fullBusiness = "Build a full-time business"
-    case replaceJob   = "Replace my current job"
+extension BusinessGoal {
+    var title: String {
+        switch self {
+        case .sideIncome:   return "Earn extra income"
+        case .fullBusiness: return "Build a full-time business"
+        case .replaceJob:   return "Replace my current job"
+        }
+    }
 
     var subtitle: String {
         switch self {
@@ -316,7 +328,7 @@ private struct ExperienceQuestionView: View {
             VStack(spacing: Theme.Spacing.sm) {
                 ForEach(ExperienceLevel.allCases, id: \.self) { level in
                     OnboardingOptionCard(
-                        title: level.rawValue,
+                        title: level.title,
                         subtitle: level.subtitle,
                         isSelected: selected == level
                     ) {
@@ -365,7 +377,7 @@ private struct GoalQuestionView: View {
             VStack(spacing: Theme.Spacing.sm) {
                 ForEach(BusinessGoal.allCases, id: \.self) { goal in
                     OnboardingOptionCard(
-                        title: goal.rawValue,
+                        title: goal.title,
                         subtitle: goal.subtitle,
                         isSelected: selected == goal
                     ) {

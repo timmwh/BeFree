@@ -6,25 +6,34 @@
 //
 
 import Foundation
+import SwiftUI
 
-enum Phase: String, Codable {
+/// Single source of truth for business phases. Matches the final 5-phase spine
+/// (Foundation → Setup → Position → Launch → Scale). Used by both data (Step.phase)
+/// and UI (PhaseChip, roadmap sections).
+enum Phase: String, Codable, CaseIterable {
     case foundation = "Foundation"
-    case firstActions = "First Actions"
-    case growth = "Growth"
-    case advanced = "Advanced"
-    
-    var toBusinessPhase: BusinessPhase {
+    case setup      = "Setup"
+    case position   = "Position"
+    case launch     = "Launch"
+    case scale      = "Scale"
+
+    /// Base phase color from Figma tokens.
+    var color: Color {
         switch self {
-        case .foundation:
-            return .setup
-        case .firstActions:
-            return .action
-        case .growth:
-            return .growth
-        case .advanced:
-            return .scale
+        case .foundation: return Theme.Colors.phaseFoundation
+        case .setup:      return Theme.Colors.phaseSetup
+        case .position:   return Theme.Colors.phasePosition
+        case .launch:     return Theme.Colors.phaseLaunch
+        case .scale:      return Theme.Colors.phaseScale
         }
     }
+
+    /// Fill-background variant (`.opacity(0.2)`).
+    var bg: Color { color.opacity(0.2) }
+
+    /// Border variant (`.opacity(0.4)`).
+    var border: Color { color.opacity(0.4) }
 }
 
 struct Step: Identifiable, Codable {
@@ -36,10 +45,8 @@ struct Step: Identifiable, Codable {
     let videoId: String
     let watchNotes: [String]
     let expectedOutput: String
-    let subtasks: [String]
-    let resources: [Resource]
     var isCompleted: Bool
-    
+
     init(
         id: UUID = UUID(),
         title: String,
@@ -49,8 +56,6 @@ struct Step: Identifiable, Codable {
         videoId: String = "",
         watchNotes: [String] = [],
         expectedOutput: String = "",
-        subtasks: [String] = [],
-        resources: [Resource] = [],
         isCompleted: Bool = false
     ) {
         self.id = id
@@ -61,8 +66,6 @@ struct Step: Identifiable, Codable {
         self.videoId = videoId
         self.watchNotes = watchNotes
         self.expectedOutput = expectedOutput
-        self.subtasks = subtasks
-        self.resources = resources
         self.isCompleted = isCompleted
     }
 }

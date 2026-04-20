@@ -17,6 +17,9 @@ struct Theme {
         
         /// Card and component background (#13131a) - Used for cards, dialogs, and elevated surfaces
         static let cardBackground = Color(hex: "13131a")
+
+        /// Muted card background (#13131a @ 50%) - Figma "transparent card" look
+        static let cardBackgroundMuted = Color(hex: "13131a").opacity(0.5)
         
         // MARK: Primary Colors
         /// Primary blue (#3b82f6) - Used for primary actions, gradients, and highlights
@@ -51,26 +54,33 @@ struct Theme {
         /// Lighter border for dividers
         static let divider = Color(hex: "252530").opacity(0.3)
         
-        // MARK: Phase Colors
-        /// Setup phase - Blue (#51a2ff)
-        static let phaseSetup = Color(hex: "51a2ff")
-        static let phaseSetupBg = Color(hex: "2b7fff").opacity(0.2)
-        static let phaseSetupBorder = Color(hex: "2b7fff").opacity(0.3)
-        
-        /// Action phase - Yellow (#fdc700)
-        static let phaseAction = Color(hex: "fdc700")
-        static let phaseActionBg = Color(hex: "f0b100").opacity(0.2)
-        static let phaseActionBorder = Color(hex: "f0b100").opacity(0.3)
-        
-        /// Growth phase - Green (#05df72)
-        static let phaseGrowth = Color(hex: "05df72")
-        static let phaseGrowthBg = Color(hex: "00c950").opacity(0.2)
-        static let phaseGrowthBorder = Color(hex: "00c950").opacity(0.3)
-        
-        /// Scale phase - Purple (#c27aff)
-        static let phaseScale = Color(hex: "c27aff")
-        static let phaseScaleBg = Color(hex: "ad46ff").opacity(0.2)
-        static let phaseScaleBorder = Color(hex: "ad46ff").opacity(0.3)
+        // MARK: Phase Colors (final 5-phase spine from Figma)
+        // Each phase: base color + `.opacity(0.2)` bg variant + `.opacity(0.4)` border variant.
+
+        /// Foundation phase - Blue (#3b82f6)
+        static let phaseFoundation = Color(hex: "3b82f6")
+        static let phaseFoundationBg = Color(hex: "3b82f6").opacity(0.2)
+        static let phaseFoundationBorder = Color(hex: "3b82f6").opacity(0.4)
+
+        /// Setup phase - Cyan (#06b6d4)
+        static let phaseSetup = Color(hex: "06b6d4")
+        static let phaseSetupBg = Color(hex: "06b6d4").opacity(0.2)
+        static let phaseSetupBorder = Color(hex: "06b6d4").opacity(0.4)
+
+        /// Position phase - Purple (#a855f7)
+        static let phasePosition = Color(hex: "a855f7")
+        static let phasePositionBg = Color(hex: "a855f7").opacity(0.2)
+        static let phasePositionBorder = Color(hex: "a855f7").opacity(0.4)
+
+        /// Launch phase - Amber (#f59e0b)
+        static let phaseLaunch = Color(hex: "f59e0b")
+        static let phaseLaunchBg = Color(hex: "f59e0b").opacity(0.2)
+        static let phaseLaunchBorder = Color(hex: "f59e0b").opacity(0.4)
+
+        /// Scale phase - Green (#05df72)
+        static let phaseScale = Color(hex: "05df72")
+        static let phaseScaleBg = Color(hex: "05df72").opacity(0.2)
+        static let phaseScaleBorder = Color(hex: "05df72").opacity(0.4)
         
         // MARK: Status Colors
         /// Success state - Green

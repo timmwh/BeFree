@@ -355,6 +355,6 @@ private struct ErrorBanner: View {
 // MARK: - Preview
 
 #Preview {
-    CoachSheetView(step: DataService.shared.getFoundationSteps(for: "AAA")[0])
+    CoachSheetView(step: DataService.shared.getAuthoredSteps(for: "AAA")[0])
         .environmentObject(AppViewModel())
 }

@@ -7,41 +7,39 @@
 
 import SwiftUI
 
+/// Pill-shaped phase badge. Phase 1 adds active/completed/locked states;
+/// Phase 0 only migrates the enum and tokens.
 struct PhaseChip: View {
-    let phase: BusinessPhase
-    
-    private var phaseData: (name: String, icon: String, color: Color, bg: Color, border: Color) {
+    let phase: Phase
+
+    private var icon: String {
         switch phase {
-        case .setup:
-            return ("Setup", "wrench.fill", Theme.Colors.phaseSetup, Theme.Colors.phaseSetupBg, Theme.Colors.phaseSetupBorder)
-        case .action:
-            return ("Action", "bolt.fill", Theme.Colors.phaseAction, Theme.Colors.phaseActionBg, Theme.Colors.phaseActionBorder)
-        case .growth:
-            return ("Growth", "chart.line.uptrend.xyaxis", Theme.Colors.phaseGrowth, Theme.Colors.phaseGrowthBg, Theme.Colors.phaseGrowthBorder)
-        case .scale:
-            return ("Scale", "arrow.up.right", Theme.Colors.phaseScale, Theme.Colors.phaseScaleBg, Theme.Colors.phaseScaleBorder)
+        case .foundation: return "cube.fill"
+        case .setup:      return "wrench.and.screwdriver.fill"
+        case .position:   return "scope"
+        case .launch:     return "paperplane.fill"
+        case .scale:      return "chart.line.uptrend.xyaxis"
         }
     }
-    
+
     var body: some View {
         HStack(spacing: 6) {
-            Image(systemName: phaseData.icon)
+            Image(systemName: icon)
                 .font(.system(size: 12))
-                .foregroundColor(phaseData.color)
-            
-            Text(phaseData.name)
+                .foregroundColor(phase.color)
+
+            Text(phase.rawValue)
                 .font(Theme.Typography.small)
-                .foregroundColor(phaseData.color)
+                .foregroundColor(phase.color)
                 .tracking(0)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 6)
-        .background(phaseData.bg)
+        .background(phase.bg)
         .cornerRadius(Theme.CornerRadius.pill)
         .overlay(
             RoundedRectangle(cornerRadius: Theme.CornerRadius.pill)
-                .stroke(phaseData.border, lineWidth: 0.633)
+                .stroke(phase.border, lineWidth: 0.633)
         )
     }
 }
-

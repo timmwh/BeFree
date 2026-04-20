@@ -9,9 +9,8 @@ import SwiftUI
 
 struct RoadmapView: View {
     @EnvironmentObject var viewModel: AppViewModel
-    @State private var isFoundationExpanded = true
-    @State private var isFirstActionsExpanded = false
-    
+    @State private var expanded: Set<Phase> = [.foundation]
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -73,40 +72,45 @@ struct RoadmapView: View {
                     .background(Theme.Colors.cardBackground)
                     .cornerRadius(Theme.CornerRadius.lg)
                     
-                    // Foundation Phase
-                    PhaseSection(
-                        title: "Foundation",
-                        subtitle: "Build the groundwork for your business",
-                        steps: viewModel.foundationSteps,
-                        isExpanded: $isFoundationExpanded,
-                        isLocked: false
-                    )
-                    
-                    // First Actions Phase
-                    PhaseSection(
-                        title: "First Actions",
-                        subtitle: "Take your first steps in the market",
-                        steps: viewModel.firstActionsSteps,
-                        isExpanded: $isFirstActionsExpanded,
-                        isLocked: false
-                    )
-                    
-                    // Growth Phase (Locked)
+                    // Active authored phases — styling will be redone in Phase 5.
+                    ForEach(activePhases, id: \.self) { phase in
+                        PhaseSection(
+                            title: phase.rawValue,
+                            subtitle: subtitle(for: phase),
+                            steps: viewModel.steps(for: phase),
+                            isExpanded: Binding(
+                                get: { expanded.contains(phase) },
+                                set: { isExpanded in
+                                    if isExpanded { expanded.insert(phase) }
+                                    else { expanded.remove(phase) }
+                                }
+                            ),
+                            isLocked: false
+                        )
+                    }
+
+                    // Scale has no authored steps in the MVP.
                     LockedPhaseSection(
-                        title: "Growth",
-                        subtitle: "Scale your business to the next level"
-                    )
-                    
-                    // Scale Phase (Locked)
-                    LockedPhaseSection(
-                        title: "Scale",
-                        subtitle: "Master advanced strategies"
+                        title: Phase.scale.rawValue,
+                        subtitle: "Grow and optimize continuously"
                     )
                 }
                 .padding(.horizontal, Theme.Spacing.lg)
                 .padding(.bottom, Theme.Spacing.xl)
             }
             .background(Theme.Colors.background)
+        }
+    }
+
+    private let activePhases: [Phase] = [.foundation, .setup, .position, .launch]
+
+    private func subtitle(for phase: Phase) -> String {
+        switch phase {
+        case .foundation: return "Build the groundwork for your business"
+        case .setup:      return "Prepare your tools and accounts"
+        case .position:   return "Define your niche and offer"
+        case .launch:     return "Take your first real-world actions"
+        case .scale:      return "Grow and optimize continuously"
         }
     }
 }

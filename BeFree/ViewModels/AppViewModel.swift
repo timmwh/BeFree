@@ -38,8 +38,8 @@ class AppViewModel: ObservableObject {
             // Fallback: default to first model
             businessModel = models.first
         }
-        
-        allSteps = dataService.getFoundationSteps(for: businessModel?.shortName ?? "AAA") + dataService.getFirstActionsSteps()
+
+        allSteps = dataService.getAuthoredSteps(for: businessModel?.shortName ?? "AAA")
         updateStepsCompletionStatus()
     }
     
@@ -50,25 +50,34 @@ class AppViewModel: ObservableObject {
     }
     
     // MARK: - Computed Properties
-    
+
     var nextStep: Step? {
         return allSteps.first { !$0.isCompleted }
     }
-    
-    var foundationSteps: [Step] {
-        return allSteps.filter { $0.phase == .foundation }
+
+    /// Returns all authored steps for a given phase, in canonical order.
+    /// Scale currently has no authored steps in the MVP.
+    func steps(for phase: Phase) -> [Step] {
+        return allSteps.filter { $0.phase == phase }
     }
-    
-    var firstActionsSteps: [Step] {
-        return allSteps.filter { $0.phase == .firstActions }
+
+    /// 1-based ordinal of a step within the full authored sequence
+    /// (Foundation → Setup → Position → Launch). Returns nil for unknown steps
+    /// and for Scale-phase steps (Scale is excluded from the counter).
+    func stepIndex(of step: Step) -> Int? {
+        guard step.phase != .scale,
+              let idx = allSteps.firstIndex(where: { $0.id == step.id })
+        else { return nil }
+        return idx + 1
     }
-    
+
     var completedStepsCount: Int {
         return userProgress.completedStepIds.count
     }
-    
+
+    /// Total authored steps across all active phases (excludes Scale, which has no steps in MVP).
     var totalStepsCount: Int {
-        return foundationSteps.count + firstActionsSteps.count
+        return allSteps.count
     }
     
     var progressPercentage: Int {
@@ -131,7 +140,7 @@ class AppViewModel: ObservableObject {
     func selectModel(_ model: BusinessModel) {
         businessModel = model
         userProgress.selectedModelShortName = model.shortName
-        allSteps = dataService.getFoundationSteps(for: model.shortName) + dataService.getFirstActionsSteps()
+        allSteps = dataService.getAuthoredSteps(for: model.shortName)
         updateStepsCompletionStatus()
         saveProgress()
     }
@@ -151,7 +160,26 @@ class AppViewModel: ObservableObject {
         updateStepsCompletionStatus()
         saveProgress()
     }
-    
+
+    // MARK: - Onboarding profile (internal)
+
+    /// Persists onboarding profile answers. Never rendered in UI; used only
+    /// as input for the AI match-explanation prompt.
+    func setOnboardingProfile(experience: ExperienceLevel?, goal: BusinessGoal?) {
+        userProgress.onboardingExperience = experience
+        userProgress.onboardingGoal = goal
+        saveProgress()
+    }
+
+    // MARK: - Community identity (visible on Profile / Edit Profile)
+
+    func setCommunityProfile(firstName: String?, lastName: String?, username: String?) {
+        userProgress.firstName = firstName
+        userProgress.lastName = lastName
+        userProgress.username = username
+        saveProgress()
+    }
+
     private func saveProgress() {
         persistenceService.saveUserProgress(userProgress)
     }

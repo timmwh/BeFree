@@ -7,41 +7,27 @@
 
 import SwiftUI
 
-/// Badge and chip components for status, phases, and labels
+/// Generic status / count / NEW badges. Phase-specific badges live in `PhaseChip`.
 struct BadgeChip: View {
     let text: String
     let icon: String?
     let variant: BadgeVariant
-    
+
     enum BadgeVariant {
-        // Phase badges (with icon)
-        case phaseSetup
-        case phaseAction
-        case phaseGrowth
-        case phaseScale
-        
         // Status badges (no icon)
         case statusPrimary
         case statusSuccess
         case statusWarning
         case statusError
-        
+
         // Special badges
         case new                // Gradient badge with sparkle icon
         case count(Int)         // Circular count badge
-        
+
         var colors: (bg: Color, border: Color, text: Color) {
             switch self {
-            case .phaseSetup:
-                return (Theme.Colors.phaseSetupBg, Theme.Colors.phaseSetupBorder, Theme.Colors.phaseSetup)
-            case .phaseAction:
-                return (Theme.Colors.phaseActionBg, Theme.Colors.phaseActionBorder, Theme.Colors.phaseAction)
-            case .phaseGrowth:
-                return (Theme.Colors.phaseGrowthBg, Theme.Colors.phaseGrowthBorder, Theme.Colors.phaseGrowth)
-            case .phaseScale:
-                return (Theme.Colors.phaseScaleBg, Theme.Colors.phaseScaleBorder, Theme.Colors.phaseScale)
             case .statusPrimary:
-                return (Theme.Colors.phaseSetupBg, Theme.Colors.phaseSetupBorder, Theme.Colors.phaseSetup)
+                return (Theme.Colors.primaryBlue.opacity(0.2), Theme.Colors.primaryBlue.opacity(0.4), Theme.Colors.primaryBlue)
             case .statusSuccess:
                 return (Theme.Colors.successBg, Theme.Colors.successBorder, Theme.Colors.success)
             case .statusWarning:
@@ -54,24 +40,24 @@ struct BadgeChip: View {
                 return (Theme.Colors.primaryBlue, .clear, .white)
             }
         }
-        
+
         var isGradient: Bool {
             if case .new = self { return true }
             return false
         }
-        
+
         var isPill: Bool {
             if case .count = self { return true }
             return true
         }
     }
-    
+
     init(_ text: String, icon: String? = nil, variant: BadgeVariant) {
         self.text = text
         self.icon = icon
         self.variant = variant
     }
-    
+
     var body: some View {
         HStack(spacing: 6) {
             if let icon = icon {
@@ -79,7 +65,7 @@ struct BadgeChip: View {
                     .font(.system(size: 12))
                     .foregroundColor(variant.colors.text)
             }
-            
+
             Text(text)
                 .font(Theme.Typography.small)
                 .foregroundColor(variant.colors.text)
@@ -109,29 +95,11 @@ struct BadgeChip: View {
 
 // MARK: - Specialized Badge Views
 
-/// Phase chip with icon - Used in roadmap
-struct PhaseChipView: View {
-    let phase: BusinessPhase
-    
-    var body: some View {
-        switch phase {
-        case .setup:
-            BadgeChip("Setup", icon: "wrench.and.screwdriver.fill", variant: .phaseSetup)
-        case .action:
-            BadgeChip("Action", icon: "bolt.fill", variant: .phaseAction)
-        case .growth:
-            BadgeChip("Growth", icon: "chart.line.uptrend.xyaxis", variant: .phaseGrowth)
-        case .scale:
-            BadgeChip("Scale", icon: "arrow.up.right", variant: .phaseScale)
-        }
-    }
-}
-
 /// Status badge - Simple text badge
 struct StatusBadge: View {
     enum Status {
         case primary, success, warning, error
-        
+
         var badgeVariant: BadgeChip.BadgeVariant {
             switch self {
             case .primary: return .statusPrimary
@@ -141,15 +109,15 @@ struct StatusBadge: View {
             }
         }
     }
-    
+
     let status: Status
     let text: String
-    
+
     init(_ status: Status, text: String) {
         self.status = status
         self.text = text
     }
-    
+
     var body: some View {
         BadgeChip(text, variant: status.badgeVariant)
     }
@@ -165,11 +133,11 @@ struct NewBadge: View {
 /// Count badge - Circular badge with number
 struct CountBadge: View {
     let count: Int
-    
+
     var displayText: String {
         count > 9 ? "9+" : "\(count)"
     }
-    
+
     var body: some View {
         Text(displayText)
             .font(Theme.Typography.small)
@@ -184,29 +152,12 @@ struct CountBadge: View {
 #Preview {
     ScrollView {
         VStack(alignment: .leading, spacing: 24) {
-            // Phase Chips
-            VStack(alignment: .leading, spacing: 12) {
-                Text("Phase Chips")
-                    .font(Theme.Typography.heading3)
-                    .foregroundColor(Theme.Colors.textPrimary)
-                
-                HStack(spacing: 8) {
-                    BadgeChip("Setup", icon: "wrench.fill", variant: .phaseSetup)
-                    BadgeChip("Action", icon: "bolt.fill", variant: .phaseAction)
-                }
-                
-                HStack(spacing: 8) {
-                    BadgeChip("Growth", icon: "chart.line.uptrend.xyaxis", variant: .phaseGrowth)
-                    BadgeChip("Scale", icon: "arrow.up.right", variant: .phaseScale)
-                }
-            }
-            
             // Status Badges
             VStack(alignment: .leading, spacing: 12) {
                 Text("Status Badges")
                     .font(Theme.Typography.heading3)
                     .foregroundColor(Theme.Colors.textPrimary)
-                
+
                 HStack(spacing: 8) {
                     StatusBadge(.primary, text: "Primary")
                     StatusBadge(.success, text: "Success")
@@ -214,13 +165,13 @@ struct CountBadge: View {
                     StatusBadge(.error, text: "Error")
                 }
             }
-            
+
             // Special Badges
             VStack(alignment: .leading, spacing: 12) {
                 Text("Special Badges")
                     .font(Theme.Typography.heading3)
                     .foregroundColor(Theme.Colors.textPrimary)
-                
+
                 HStack(spacing: 12) {
                     NewBadge()
                     CountBadge(count: 3)
@@ -232,4 +183,3 @@ struct CountBadge: View {
     }
     .background(Theme.Colors.background)
 }
-
