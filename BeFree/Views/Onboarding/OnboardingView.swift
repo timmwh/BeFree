@@ -72,14 +72,14 @@ struct OnboardingView: View {
             Theme.Colors.background.ignoresSafeArea()
 
             VStack(spacing: 0) {
-                // Progress bar (hidden on welcome)
-                if currentPage != .welcome {
+                // Progress bar (hidden on welcome; Match renders its own header).
+                if currentPage != .welcome && currentPage != .match {
                     OnboardingProgressBar(progress: progress)
                         .padding(.top, 56) // below status bar
                 }
 
-                // Back button row (shown on question + match screens)
-                if [.experienceQuestion, .goalQuestion, .match, .modelPicker].contains(currentPage) {
+                // Back button row (Match handles its own close button).
+                if [.experienceQuestion, .goalQuestion, .modelPicker].contains(currentPage) {
                     HStack {
                         OnboardingBackButton(action: goBack)
                         Spacer()
@@ -107,6 +107,13 @@ struct OnboardingView: View {
                     GoalQuestionView(
                         selected: $selectedGoal,
                         onContinue: {
+                            // Persist the internal onboarding profile *before*
+                            // selecting the model so it's available to the
+                            // Match-screen AI prompt that fires onAppear.
+                            viewModel.setOnboardingProfile(
+                                experience: selectedExperience,
+                                goal: selectedGoal
+                            )
                             viewModel.selectModel(recommendedModel)
                             advance(to: .match)
                         }
@@ -116,8 +123,11 @@ struct OnboardingView: View {
                 case .match:
                     MatchPageView(
                         model: recommendedModel,
+                        experience: selectedExperience,
+                        goal: selectedGoal,
                         onAccept: { advance(to: .confirmation) },
-                        onSeeAll: { advance(to: .modelPicker) }
+                        onSeeAll: { advance(to: .modelPicker) },
+                        onClose: goBack
                     )
                     .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
 
@@ -440,101 +450,313 @@ private struct OnboardingOptionCard: View {
 
 // MARK: - Match Page
 
+/// State machine for the personalized AI explanation block on Match.
+/// `.hidden` covers all failure modes (no API key, network error, parse
+/// error) — per product spec we silently drop the block instead of showing
+/// retry / error UI.
+private enum MatchExplanationState {
+    case loading
+    case success(String)
+    case hidden
+}
+
 private struct MatchPageView: View {
     let model: BusinessModel
+    let experience: ExperienceLevel?
+    let goal: BusinessGoal?
     let onAccept: () -> Void
     let onSeeAll: () -> Void
+    let onClose: () -> Void
+
+    @State private var explanationState: MatchExplanationState = .loading
+
+    private let aiService = AIService.shared
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        VStack(spacing: 0) {
+            matchHeader
+
             ScrollView {
-                VStack(alignment: .leading, spacing: 0) {
-                    // Header
-                    VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-                        Text("Your perfect\nmatch")
-                            .font(Theme.Typography.onboardingQuestionTitle)
-                            .foregroundColor(Theme.Colors.textPrimary)
-                            .lineSpacing(2)
-
-                        Text("Based on your answers, we recommend:")
-                            .font(Theme.Typography.body)
-                            .foregroundColor(Theme.Colors.textSecondary)
-                    }
-                    .padding(.horizontal, Theme.Spacing.lg)
-                    .padding(.top, Theme.Spacing.lg)
-
-                    Spacer().frame(height: Theme.Spacing.xxl)
-
-                    // Model card
-                    VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
-                        HStack(spacing: Theme.Spacing.md) {
-                            IconContainer(icon: model.icon, size: .large, style: .blueGradient)
-
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(model.shortName)
-                                    .font(Theme.Typography.caption)
-                                    .foregroundColor(Theme.Colors.primaryBlue)
-                                    .tracking(1)
-                                    .textCase(.uppercase)
-                                Text(model.name)
-                                    .font(Theme.Typography.bodySemiBold)
-                                    .foregroundColor(Theme.Colors.textPrimary)
-                            }
-                        }
-
-                        Text(model.description)
-                            .font(Theme.Typography.body)
-                            .foregroundColor(Theme.Colors.textSecondary)
-                            .lineSpacing(4)
-
-                        VStack(spacing: Theme.Spacing.sm) {
-                            ForEach(model.benefits, id: \.self) { benefit in
-                                BenefitCard(icon: benefitIcon(for: benefit), title: benefit)
-                            }
-                        }
-                    }
-                    .padding(Theme.Spacing.lg)
-                    .background(Theme.Colors.cardBackground)
-                    .cornerRadius(Theme.CornerRadius.xl)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: Theme.CornerRadius.xl)
-                            .stroke(Theme.Colors.divider, lineWidth: 0.633)
-                    )
-                    .padding(.horizontal, Theme.Spacing.lg)
-
-                    Spacer().frame(height: Theme.Spacing.xl)
+                VStack(spacing: Theme.Spacing.xxl) {
+                    hero
+                    modelCard
+                    bottomActions
                 }
+                .padding(.horizontal, Theme.Spacing.xxl)
+                .padding(.bottom, Theme.Spacing.xl)
             }
+        }
+        .onAppear(perform: startExplanationFetch)
+    }
 
-            // Fixed bottom buttons
-            VStack(spacing: Theme.Spacing.md) {
-                OnboardingContinueButton("Start with \(model.shortName)") {
+    // MARK: - Header (close + progress)
+
+    private var matchHeader: some View {
+        HStack(spacing: Theme.Spacing.md) {
+            Button(action: onClose) {
+                Image(systemName: "xmark")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundColor(Theme.Colors.textPrimary)
+                    .frame(width: 44, height: 44)
+                    .background(Theme.Colors.cardBackground)
+                    .cornerRadius(Theme.CornerRadius.lg)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: Theme.CornerRadius.lg)
+                            .stroke(Theme.Colors.borderOpacity, lineWidth: 0.633)
+                    )
+            }
+            .accessibilityLabel("Close match")
+
+            ProgressBar(progress: 1, height: 4)
+        }
+        .padding(.horizontal, Theme.Spacing.xxl)
+        .padding(.bottom, Theme.Spacing.lg)
+    }
+
+    // MARK: - Hero
+
+    private var hero: some View {
+        VStack(spacing: Theme.Spacing.lg) {
+            ZStack {
+                Theme.Gradients.primaryButton
+                Image(systemName: "sparkles")
+                    .font(.system(size: 32, weight: .semibold))
+                    .foregroundColor(.white)
+            }
+            .frame(width: 80, height: 80)
+            .cornerRadius(Theme.CornerRadius.xl)
+            .shadow(color: Theme.Colors.primaryBlue.opacity(0.3), radius: 30, x: 0, y: 0)
+
+            VStack(spacing: Theme.Spacing.sm) {
+                Text("Perfect Match Found")
+                    .font(Theme.Typography.heading1)
+                    .foregroundColor(Theme.Colors.textPrimary)
+                    .multilineTextAlignment(.center)
+
+                Text("Your personalized business model is ready")
+                    .font(Theme.Typography.body)
+                    .foregroundColor(Theme.Colors.textSecondary)
+                    .multilineTextAlignment(.center)
+            }
+        }
+        .padding(.top, Theme.Spacing.lg)
+    }
+
+    // MARK: - Model card (loading / success / hidden)
+
+    private var modelCard: some View {
+        VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+            switch explanationState {
+            case .loading:
+                loadingCardContent
+            case .success(let text):
+                successCardContent(text: text)
+            case .hidden:
+                successCardContent(text: nil)
+            }
+        }
+        .padding(Theme.Spacing.xl)
+        .background(Theme.Colors.cardBackground)
+        .cornerRadius(Theme.CornerRadius.lg)
+        .overlay(
+            RoundedRectangle(cornerRadius: Theme.CornerRadius.lg)
+                .stroke(Theme.Colors.borderOpacity, lineWidth: 0.633)
+        )
+    }
+
+    // Loading: full skeleton — model code/name/AI block all replaced with
+    // shimmer placeholders + a microcopy line + indeterminate progress;
+    // benefits are hidden entirely.
+    @ViewBuilder
+    private var loadingCardContent: some View {
+        SkeletonBar(width: 120, height: 14)
+        SkeletonBar(width: 200, height: 20)
+
+        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+            Text("Personalizing your recommendation…")
+                .font(Theme.Typography.small)
+                .foregroundColor(Theme.Colors.textSecondary)
+
+            IndeterminateProgressBar()
+        }
+        .padding(.top, Theme.Spacing.sm)
+
+        Rectangle()
+            .fill(Color(hex: "252530").opacity(0.3))
+            .frame(height: 1)
+            .padding(.top, Theme.Spacing.sm)
+    }
+
+    // Success / hidden share the same shell. When `text == nil` the AI
+    // paragraph block is omitted but kürzel + name + benefits stay.
+    @ViewBuilder
+    private func successCardContent(text: String?) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: "sparkles")
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundColor(Theme.Colors.primaryBlue)
+
+            Text(model.shortName.uppercased())
+                .font(Theme.Typography.smallMedium)
+                .foregroundColor(Theme.Colors.primaryBlue)
+                .tracking(1.5)
+        }
+
+        Text(model.name)
+            .font(Theme.Typography.bodySemiBold)
+            .foregroundColor(Theme.Colors.textPrimary)
+
+        if let text = text, !text.isEmpty {
+            Text(text)
+                .font(Theme.Typography.body)
+                .foregroundColor(Theme.Colors.textPrimary.opacity(0.9))
+                .lineSpacing(4)
+                .padding(.top, Theme.Spacing.xs)
+        }
+
+        Rectangle()
+            .fill(Color(hex: "252530").opacity(0.3))
+            .frame(height: 1)
+            .padding(.vertical, Theme.Spacing.xs)
+
+        VStack(spacing: Theme.Spacing.md) {
+            ForEach(model.benefits, id: \.self) { benefit in
+                MatchBenefitRow(icon: benefitIcon(for: benefit), text: benefit)
+            }
+        }
+    }
+
+    // MARK: - Bottom actions (PrimaryButton + skeleton + See all)
+
+    private var bottomActions: some View {
+        VStack(spacing: Theme.Spacing.md) {
+            switch explanationState {
+            case .loading:
+                MatchSkeletonButton()
+            case .success, .hidden:
+                PrimaryButton("Start with \(model.shortName)", icon: "arrow.right") {
                     onAccept()
                 }
-
-                Button("See all models") {
-                    onSeeAll()
-                }
-                .font(Theme.Typography.body)
-                .foregroundColor(Theme.Colors.textSecondary)
             }
-            .padding(.horizontal, Theme.Spacing.lg)
-            .padding(.bottom, Theme.Spacing.xxxl)
+
+            Button(action: onSeeAll) {
+                Text("See all models")
+                    .font(Theme.Typography.caption)
+                    .foregroundColor(Theme.Colors.textSecondary)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, Theme.Spacing.sm)
+            }
+        }
+        .padding(.top, Theme.Spacing.lg)
+    }
+
+    // MARK: - Actions
+
+    private func startExplanationFetch() {
+        // Re-entry guard: if we already have content, don't refetch.
+        if case .loading = explanationState { } else { return }
+
+        aiService.generateMatchExplanation(
+            model: model,
+            experience: experience,
+            goal: goal
+        ) { result in
+            switch result {
+            case .success(let text):
+                let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+                explanationState = trimmed.isEmpty ? .hidden : .success(trimmed)
+            case .failure:
+                explanationState = .hidden
+            }
         }
     }
 
     private func benefitIcon(for benefit: String) -> String {
         let lower = benefit.lowercased()
-        if lower.contains("cost") || lower.contains("€") || lower.contains("$") { return "dollarsign.circle.fill" }
-        if lower.contains("demand") || lower.contains("client") { return "person.2.fill" }
-        if lower.contains("scale") || lower.contains("scalable") { return "arrow.up.right" }
+        if lower.contains("cost") || lower.contains("capital") || lower.contains("€") || lower.contains("$") { return "dollarsign.circle.fill" }
+        if lower.contains("demand") || lower.contains("client") || lower.contains("market") { return "person.2.fill" }
+        if lower.contains("scale") || lower.contains("scalable") || lower.contains("growing") { return "arrow.up.right" }
         if lower.contains("skill") || lower.contains("learn") { return "book.fill" }
-        if lower.contains("income") || lower.contains("revenue") { return "chart.line.uptrend.xyaxis" }
+        if lower.contains("income") || lower.contains("revenue") || lower.contains("commission") { return "chart.line.uptrend.xyaxis" }
         if lower.contains("remote") || lower.contains("flexible") { return "house.fill" }
-        if lower.contains("startup") || lower.contains("tech") { return "sparkles" }
+        if lower.contains("startup") || lower.contains("tech") || lower.contains("technology") { return "sparkles" }
         if lower.contains("creative") || lower.contains("brand") { return "paintbrush.fill" }
         if lower.contains("recurring") || lower.contains("retainer") { return "repeat.circle.fill" }
-        return "star.fill"
+        if lower.contains("competition") { return "trophy.fill" }
+        if lower.contains("inventory") || lower.contains("shipping") || lower.contains("product") { return "shippingbox.fill" }
+        if lower.contains("pricing") || lower.contains("premium") { return "tag.fill" }
+        return "checkmark.seal.fill"
+    }
+}
+
+// MARK: - Match skeleton button (loading-state CTA placeholder)
+
+/// Full-width 56pt placeholder shown in place of the PrimaryButton while
+/// the AI explanation is loading. Muted bg + a centered shimmer slug
+/// mirroring Figma 2005-1625.
+private struct MatchSkeletonButton: View {
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
+                .fill(Color(hex: "252530").opacity(0.25))
+
+            SkeletonBar(width: 180, height: 18)
+        }
+        .frame(maxWidth: .infinity)
+        .frame(height: 56)
+        .accessibilityLabel("Personalizing your recommendation")
+    }
+}
+
+// MARK: - Match benefit row (inline, replaces former BenefitCard)
+
+private struct MatchBenefitRow: View {
+    let icon: String
+    let text: String
+
+    var body: some View {
+        HStack(spacing: Theme.Spacing.md) {
+            ZStack {
+                LinearGradient(
+                    colors: [Theme.Colors.primaryBlue.opacity(0.2),
+                             Theme.Colors.secondaryBlue.opacity(0.15)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                Image(systemName: icon)
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(Theme.Colors.primaryBlue)
+            }
+            .frame(width: 44, height: 44)
+            .cornerRadius(14)
+            .shadow(color: Theme.Colors.primaryBlue.opacity(0.15), radius: 16, x: 0, y: 0)
+
+            Text(text)
+                .font(Theme.Typography.body)
+                .foregroundColor(Theme.Colors.textPrimary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            ZStack {
+                LinearGradient(
+                    colors: [Theme.Colors.success, Color(hex: "00c950")],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                Image(systemName: "checkmark")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundColor(.white)
+            }
+            .frame(width: 28, height: 28)
+            .clipShape(Circle())
+            .shadow(color: Theme.Colors.success.opacity(0.3), radius: 12, x: 0, y: 0)
+        }
+        .padding(14)
+        .background(Color(hex: "13131a").opacity(0.6))
+        .cornerRadius(Theme.CornerRadius.md)
+        .overlay(
+            RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
+                .stroke(Color(hex: "252530").opacity(0.3), lineWidth: 0.633)
+        )
     }
 }
 

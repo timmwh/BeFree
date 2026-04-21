@@ -39,6 +39,96 @@ class AIService {
         """
     }
 
+    // MARK: - Match-explanation prompt
+
+    /// System prompt for the personalized "why this model" copy on the Match
+    /// screen. Both `experience` and `goal` come from the internal onboarding
+    /// profile and are never shown in the UI; here they exist only to ground
+    /// the AI's reasoning.
+    func matchSystemPrompt(model: BusinessModel,
+                           experience: ExperienceLevel?,
+                           goal: BusinessGoal?) -> String {
+        let experienceText = experience?.rawValue ?? "unknown"
+        let goalText = goal?.rawValue ?? "unknown"
+        return """
+        You are writing a short, personalized 2–4 sentence explanation for why \(model.name) is the right fit for a specific user in the BeFree app.
+
+        User context:
+        - Experience level: \(experienceText)
+        - Goal: \(goalText)
+
+        Rules:
+        - 2–4 sentences, no more.
+        - Address the user in second person ("you", "your").
+        - Avoid hype, emojis, and generic motivation. Be concrete.
+        - Directly reference the user's experience and goal in your reasoning.
+        - No headings, no bullet points, no markdown. Plain prose only.
+        - Do not mention any other business model.
+        """
+    }
+
+    /// Generates the personalized Match-screen explanation. On any failure
+    /// (no API key, network, API error, parse error) the caller should treat
+    /// the AI block as silently hidden — no retry, no error UI per product
+    /// spec.
+    func generateMatchExplanation(
+        model: BusinessModel,
+        experience: ExperienceLevel?,
+        goal: BusinessGoal?,
+        completion: @escaping (Result<String, AIError>) -> Void
+    ) {
+        guard isConfigured else {
+            completion(.failure(.notConfigured))
+            return
+        }
+
+        let messages: [[String: String]] = [
+            ["role": "system", "content": matchSystemPrompt(model: model, experience: experience, goal: goal)],
+            ["role": "user", "content": "Write the explanation now."]
+        ]
+
+        let body: [String: Any] = [
+            "model": self.model,
+            "messages": messages,
+            "max_tokens": 200,
+            "temperature": 0.7
+        ]
+
+        var request = URLRequest(url: endpoint)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("Bearer \(Config.openAIApiKey)", forHTTPHeaderField: "Authorization")
+        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+
+        URLSession.shared.dataTask(with: request) { data, _, error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    completion(.failure(.networkError(error.localizedDescription)))
+                    return
+                }
+
+                guard let data = data,
+                      let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                      let choices = json["choices"] as? [[String: Any]],
+                      let first = choices.first,
+                      let message = first["message"] as? [String: Any],
+                      let content = message["content"] as? String else {
+                    if let data = data,
+                       let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                       let errorObj = json["error"] as? [String: Any],
+                       let errorMessage = errorObj["message"] as? String {
+                        completion(.failure(.apiError(errorMessage)))
+                    } else {
+                        completion(.failure(.invalidResponse))
+                    }
+                    return
+                }
+
+                completion(.success(content.trimmingCharacters(in: .whitespacesAndNewlines)))
+            }
+        }.resume()
+    }
+
     // MARK: - Non-streaming send (simple, reliable)
 
     func sendMessage(
