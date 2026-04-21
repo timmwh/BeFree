@@ -19,14 +19,16 @@ struct MainTabView: View {
         TabView(selection: $viewModel.selectedTab) {
             DashboardView()
                 .tag(AppTab.start)
+                .toolbar(.hidden, for: .tabBar)
 
             RoadmapView()
                 .tag(AppTab.roadmap)
+                .toolbar(.hidden, for: .tabBar)
 
             ProfileView()
                 .tag(AppTab.profile)
+                .toolbar(.hidden, for: .tabBar)
         }
-        .toolbar(.hidden, for: .tabBar)
         .safeAreaInset(edge: .bottom, spacing: 0) {
             CustomTabBar(selected: $viewModel.selectedTab)
                 .padding(.horizontal, 16)
