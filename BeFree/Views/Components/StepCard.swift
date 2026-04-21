@@ -7,48 +7,34 @@
 
 import SwiftUI
 
-/// Step row used in the Roadmap step lists. Two visual variants driven by
-/// `step.isCompleted`:
+/// Roadmap step row per Figma 2002-1266. Two visual variants:
 ///
-/// - **Pending** — `cardBackgroundMuted` background, empty 24px ring,
-///   primary title, clock + duration, chevron.
-/// - **Completed** — same shape with a filled `primaryBlue` circle + white
-///   checkmark, title struck through in `textSecondary`, chevron unchanged.
+/// - **Pending** — `cardBackground` background, empty 28pt ring,
+///   primary 15pt title, duration pill on the right.
+/// - **Completed** — same shell with a filled `primaryBlue` 28pt circle
+///   + white checkmark, title struck through in `textSecondary`,
+///   duration pill unchanged.
 struct StepCard: View {
     let step: Step
     let onTap: () -> Void
 
     var body: some View {
         Button(action: onTap) {
-            HStack(spacing: Theme.Spacing.lg) {
+            HStack(spacing: Theme.Spacing.md) {
                 completionIndicator
 
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(step.title)
-                        .font(Theme.Typography.bodyMedium)
-                        .foregroundColor(step.isCompleted ? Theme.Colors.textSecondary : Theme.Colors.textPrimary)
-                        .strikethrough(step.isCompleted, color: Theme.Colors.textSecondary)
-                        .multilineTextAlignment(.leading)
+                Text(step.title)
+                    .font(.system(size: 15))
+                    .foregroundColor(step.isCompleted ? Theme.Colors.textSecondary : Theme.Colors.textPrimary)
+                    .strikethrough(step.isCompleted, color: Theme.Colors.textSecondary)
+                    .multilineTextAlignment(.leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
 
-                    HStack(spacing: 6) {
-                        Image(systemName: "clock")
-                            .font(.system(size: 11))
-                            .foregroundColor(Theme.Colors.textSecondary)
-
-                        Text("\(step.duration) min")
-                            .font(Theme.Typography.small)
-                            .foregroundColor(Theme.Colors.textSecondary)
-                    }
-                }
-
-                Spacer(minLength: Theme.Spacing.sm)
-
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(Theme.Colors.textSecondary)
+                durationPill
             }
-            .padding(Theme.Spacing.lg)
-            .background(Theme.Colors.cardBackgroundMuted)
+            .padding(.horizontal, Theme.Spacing.lg)
+            .padding(.vertical, 16)
+            .background(Theme.Colors.cardBackground)
             .cornerRadius(Theme.CornerRadius.md)
             .overlay(
                 RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
@@ -64,16 +50,32 @@ struct StepCard: View {
             ZStack {
                 Circle()
                     .fill(Theme.Colors.primaryBlue)
-                    .frame(width: 24, height: 24)
+                    .frame(width: 28, height: 28)
 
                 Image(systemName: "checkmark")
-                    .font(.system(size: 12, weight: .bold))
+                    .font(.system(size: 14, weight: .bold))
                     .foregroundColor(.white)
             }
         } else {
             Circle()
                 .stroke(Theme.Colors.border, lineWidth: 1.9)
-                .frame(width: 24, height: 24)
+                .frame(width: 28, height: 28)
         }
+    }
+
+    private var durationPill: some View {
+        HStack(spacing: 4) {
+            Image(systemName: "clock")
+                .font(.system(size: 10))
+                .foregroundColor(Theme.Colors.textSecondary)
+
+            Text("\(step.duration) min")
+                .font(.system(size: 11))
+                .foregroundColor(Theme.Colors.textSecondary)
+        }
+        .padding(.horizontal, 8)
+        .frame(height: 22)
+        .background(Color(hex: "252530").opacity(0.38))
+        .cornerRadius(Theme.CornerRadius.pill)
     }
 }
