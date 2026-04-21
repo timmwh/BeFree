@@ -204,7 +204,7 @@ private struct PhaseSectionCard: View {
                 VStack(spacing: 8) {
                     ForEach(steps) { step in
                         NavigationLink(destination: StepDetailView(step: step)) {
-                            StepCard(step: step) { }
+                            StepCard(step: step)
                         }
                         .buttonStyle(PlainButtonStyle())
                     }
