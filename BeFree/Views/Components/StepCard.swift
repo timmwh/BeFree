@@ -7,51 +7,48 @@
 
 import SwiftUI
 
+/// Step row used in the Roadmap step lists. Two visual variants driven by
+/// `step.isCompleted`:
+///
+/// - **Pending** — `cardBackgroundMuted` background, empty 24px ring,
+///   primary title, clock + duration, chevron.
+/// - **Completed** — same shape with a filled `primaryBlue` circle + white
+///   checkmark, title struck through in `textSecondary`, chevron unchanged.
 struct StepCard: View {
     let step: Step
     let onTap: () -> Void
-    
+
     var body: some View {
         Button(action: onTap) {
-            HStack(spacing: Theme.Spacing.xl) {
-                // Completion indicator (checkbox)
-                ZStack {
-                    Circle()
-                        .stroke(step.isCompleted ? Theme.Colors.primaryBlue : Theme.Colors.border, lineWidth: 1.9)
-                        .frame(width: 24, height: 24)
-                    
-                    if step.isCompleted {
-                        Image(systemName: "checkmark")
-                            .font(.system(size: 12, weight: .bold))
-                            .foregroundColor(Theme.Colors.primaryBlue)
-                    }
-                }
-                
-                // Content
+            HStack(spacing: Theme.Spacing.lg) {
+                completionIndicator
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text(step.title)
-                        .font(Theme.Typography.body)
-                        .foregroundColor(Theme.Colors.textPrimary)
-                        .tracking(-0.3125)
+                        .font(Theme.Typography.bodyMedium)
+                        .foregroundColor(step.isCompleted ? Theme.Colors.textSecondary : Theme.Colors.textPrimary)
+                        .strikethrough(step.isCompleted, color: Theme.Colors.textSecondary)
                         .multilineTextAlignment(.leading)
-                    
-                    HStack(spacing: 8) {
+
+                    HStack(spacing: 6) {
                         Image(systemName: "clock")
-                            .font(.system(size: 12))
+                            .font(.system(size: 11))
                             .foregroundColor(Theme.Colors.textSecondary)
-                        
+
                         Text("\(step.duration) min")
-                            .font(Theme.Typography.caption)
+                            .font(Theme.Typography.small)
                             .foregroundColor(Theme.Colors.textSecondary)
-                            .tracking(-0.1504)
                     }
                 }
-                
-                Spacer()
+
+                Spacer(minLength: Theme.Spacing.sm)
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(Theme.Colors.textSecondary)
             }
-            .padding(.horizontal, Theme.Spacing.xl)
-            .padding(.vertical, Theme.Spacing.lg)
-            .background(Theme.Colors.cardBackground.opacity(0.5))
+            .padding(Theme.Spacing.lg)
+            .background(Theme.Colors.cardBackgroundMuted)
             .cornerRadius(Theme.CornerRadius.md)
             .overlay(
                 RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
@@ -60,5 +57,23 @@ struct StepCard: View {
         }
         .buttonStyle(PlainButtonStyle())
     }
-}
 
+    @ViewBuilder
+    private var completionIndicator: some View {
+        if step.isCompleted {
+            ZStack {
+                Circle()
+                    .fill(Theme.Colors.primaryBlue)
+                    .frame(width: 24, height: 24)
+
+                Image(systemName: "checkmark")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundColor(.white)
+            }
+        } else {
+            Circle()
+                .stroke(Theme.Colors.border, lineWidth: 1.9)
+                .frame(width: 24, height: 24)
+        }
+    }
+}

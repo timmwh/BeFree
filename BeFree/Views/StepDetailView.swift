@@ -222,40 +222,7 @@ struct StepDetailView: View {
             )
         }
 
-        Button(action: { showCoachSheet = true }) {
-            HStack(spacing: Theme.Spacing.md) {
-                ZStack {
-                    Theme.Gradients.primaryButton
-                    Image(systemName: "sparkles")
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundColor(.white)
-                }
-                .frame(width: 36, height: 36)
-                .cornerRadius(Theme.CornerRadius.sm)
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Ask your coach")
-                        .font(Theme.Typography.bodyMedium)
-                        .foregroundColor(Theme.Colors.textPrimary)
-                    Text("Stuck or have a question? Get instant guidance.")
-                        .font(Theme.Typography.caption)
-                        .foregroundColor(Theme.Colors.textSecondary)
-                }
-
-                Spacer()
-
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(Theme.Colors.textSecondary)
-            }
-            .padding(Theme.Spacing.lg)
-            .background(Theme.Colors.cardBackground)
-            .cornerRadius(Theme.CornerRadius.md)
-            .overlay(
-                RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
-                    .stroke(Theme.Colors.primaryBlue.opacity(0.3), lineWidth: 0.633)
-            )
-        }
+        AICoachEntry(onTap: { showCoachSheet = true })
     }
 
     // MARK: - Primary CTA (fixed)
