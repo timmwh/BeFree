@@ -8,11 +8,21 @@
 import Foundation
 import Combine
 
+/// Top-level tabs. Used both as `TabView.selection` and as a bindable
+/// state other screens can mutate to request a tab switch
+/// (e.g. Dashboard's "Roadmap →" link).
+enum AppTab: Hashable {
+    case start
+    case roadmap
+    case profile
+}
+
 class AppViewModel: ObservableObject {
     @Published var userProgress: UserProgress
     @Published var allSteps: [Step] = []
     @Published var businessModel: BusinessModel?
     @Published var hasCompletedOnboarding: Bool
+    @Published var selectedTab: AppTab = .start
     
     private let dataService = DataService.shared
     private let persistenceService = PersistenceService.shared
