@@ -43,6 +43,7 @@ struct ProfileEditView: View {
             }
         }
         .navigationBarBackButtonHidden(true)
+        .hidesCustomTabBar()
         .onAppear(perform: loadFromViewModel)
         .alert("Photo editing coming soon", isPresented: $showPhotoNotice) {
             Button("OK", role: .cancel) { }

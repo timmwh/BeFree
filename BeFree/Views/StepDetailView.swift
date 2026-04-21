@@ -71,6 +71,7 @@ struct StepDetailView: View {
                 successOverlay
             }
         }
+        .hidesCustomTabBar()
     }
 
     // MARK: - Header
