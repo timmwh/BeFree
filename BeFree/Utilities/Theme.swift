@@ -14,46 +14,46 @@ struct Theme {
         // MARK: Base Colors
         /// Main app background (#0a0a0f) - Used for screens and main containers
         static let background = Color(hex: "0a0a0f")
-        
+
         /// Card and component background (#13131a) - Used for cards, dialogs, and elevated surfaces
         static let cardBackground = Color(hex: "13131a")
 
         /// Muted card background (#13131a @ 50%) - Figma "transparent card" look
         static let cardBackgroundMuted = Color(hex: "13131a").opacity(0.5)
-        
+
         // MARK: Primary Colors
         /// Primary blue (#3b82f6) - Used for primary actions, gradients, and highlights
         static let primaryBlue = Color(hex: "3b82f6")
-        
+
         /// Secondary blue (#60a5fa) - Used for gradient ends and hover states
         static let secondaryBlue = Color(hex: "60a5fa")
-        
+
         /// Primary blue with opacity - Used for icon containers and subtle backgrounds
         static let primaryBlueOpacity = Color(hex: "3b82f6").opacity(0.2)
-        
+
         // MARK: Text Colors
         /// Primary text color (#e8e8f0) - Used for headings and important text
         static let textPrimary = Color(hex: "e8e8f0")
-        
+
         /// Secondary text color (#8b8b9a) - Used for descriptions and secondary information
         static let textSecondary = Color(hex: "8b8b9a")
-        
+
         /// Tertiary text color - Used for disabled states and subtle text
         static let textTertiary = Color(hex: "8b8b9a").opacity(0.6)
-        
+
         /// Text with 90% opacity - Used for body text on cards
         static let textPrimaryOpacity = Color(hex: "e8e8f0").opacity(0.9)
-        
+
         // MARK: Border & Divider
         /// Border color (#252530) - Used for card borders and dividers
         static let border = Color(hex: "252530")
-        
+
         /// Border with opacity - Used for subtle borders
         static let borderOpacity = Color(hex: "252530").opacity(0.5)
-        
+
         /// Lighter border for dividers
         static let divider = Color(hex: "252530").opacity(0.3)
-        
+
         // MARK: Phase Colors (final 5-phase spine from Figma)
         // Each phase: base color + `.opacity(0.2)` bg variant + `.opacity(0.4)` border variant.
 
@@ -81,24 +81,24 @@ struct Theme {
         static let phaseScale = Color(hex: "05df72")
         static let phaseScaleBg = Color(hex: "05df72").opacity(0.2)
         static let phaseScaleBorder = Color(hex: "05df72").opacity(0.4)
-        
+
         // MARK: Status Colors
         /// Success state - Green
         static let success = Color(hex: "05df72")
         static let successBg = Color(hex: "00c950").opacity(0.2)
         static let successBorder = Color(hex: "00c950").opacity(0.3)
-        
+
         /// Warning state - Yellow
         static let warning = Color(hex: "fdc700")
         static let warningBg = Color(hex: "f0b100").opacity(0.2)
         static let warningBorder = Color(hex: "f0b100").opacity(0.3)
-        
+
         /// Error state - Red
         static let error = Color(hex: "ff6467")
         static let errorBg = Color(hex: "fb2c36").opacity(0.2)
         static let errorBorder = Color(hex: "fb2c36").opacity(0.3)
     }
-    
+
     // MARK: - Typography
     /// Typography system using Inter font family (static TTF cuts; PostScript names from Inter 4.1).
     struct Typography {
@@ -109,38 +109,38 @@ struct Theme {
             static let semiBold = "Inter-SemiBold"
             static let bold = "Inter-Bold"
         }
-        
+
         // MARK: Display & Headings
         /// Large heading (32px) - Used for page titles
         static let heading1 = Font.custom(Inter.regular, size: 32)
-        
+
         /// Medium heading (24px) - Used for section titles
         static let heading2 = Font.custom(Inter.regular, size: 24)
-        
+
         /// Small heading (20px) - Used for card titles
         static let heading3 = Font.custom(Inter.regular, size: 20)
-        
+
         // MARK: Body Text
         /// Standard body text (16px) - Main content text
         static let body = Font.custom(Inter.regular, size: 16)
         static let bodyMedium = Font.custom(Inter.medium, size: 16)
         static let bodySemiBold = Font.custom(Inter.semiBold, size: 16)
         static let bodyBold = Font.custom(Inter.semiBold, size: 16) // Alias for compatibility
-        
+
         // MARK: Small Text
         /// Caption text (14px) - Used for labels and descriptions
         static let caption = Font.custom(Inter.regular, size: 14)
-        
+
         /// Small text (12px) - Used for badges and tiny labels
         static let small = Font.custom(Inter.regular, size: 12)
         static let smallMedium = Font.custom(Inter.medium, size: 12)
-        
+
         // MARK: Onboarding
         static let onboardingLogoMark = Font.custom(Inter.semiBold, size: 44)
         static let onboardingTagline = Font.custom(Inter.semiBold, size: 22)
         static let onboardingQuestionTitle = Font.custom(Inter.bold, size: 30)
         static let onboardingConfirmationTitle = Font.custom(Inter.semiBold, size: 36)
-        
+
         // MARK: Legacy Compatibility
         /// Legacy names for backward compatibility with existing views
         static let largeTitle = Font.system(size: 34, weight: .bold)
@@ -151,7 +151,7 @@ struct Theme {
         static let subheadline = Font.system(size: 15, weight: .regular)
         static let footnote = Font.system(size: 13, weight: .regular)
         static let caption2 = Font.system(size: 11, weight: .regular)
-        
+
         // MARK: Fallback System Fonts
         /// Fallback if Inter is not available
         static let systemHeading1 = Font.system(size: 32, weight: .regular)
@@ -160,7 +160,7 @@ struct Theme {
         static let systemCaption = Font.system(size: 14, weight: .regular)
         static let systemSmall = Font.system(size: 12, weight: .regular)
     }
-    
+
     // MARK: - Spacing
     /// Consistent spacing system for margins and paddings
     struct Spacing {
@@ -172,7 +172,7 @@ struct Theme {
         static let xxl: CGFloat = 24    // Section spacing
         static let xxxl: CGFloat = 48   // Major section spacing
     }
-    
+
     // MARK: - Corner Radius
     /// Border radius values for different component sizes
     struct CornerRadius {
@@ -182,7 +182,7 @@ struct Theme {
         static let xl: CGFloat = 24     // Large cards
         static let pill: CGFloat = 999  // Fully rounded (badges, pills)
     }
-    
+
     // MARK: - Shadows
     /// Shadow and glow effects for elevated components
     struct Shadow {
@@ -192,13 +192,13 @@ struct Theme {
             ShadowLayer(color: Color(hex: "3b82f6").opacity(0.3), radius: 40, x: 0, y: 0),
             ShadowLayer(color: Color(hex: "3b82f6").opacity(0.2), radius: 60, x: 0, y: 0)
         ]
-        
+
         /// Subtle glow for badges and small elements
         static let subtleGlow = [
             ShadowLayer(color: Color(hex: "3b82f6").opacity(0.4), radius: 20, x: 0, y: 0)
         ]
     }
-    
+
     // MARK: - Gradients
     /// Gradient definitions for backgrounds and buttons
     struct Gradients {
@@ -208,7 +208,7 @@ struct Theme {
             startPoint: .top,
             endPoint: .bottom
         )
-        
+
         /// Shimmer overlay effect for buttons
         static let shimmer = LinearGradient(
             colors: [Color.clear, Color.white.opacity(0.2), Color.clear],
@@ -236,7 +236,7 @@ extension View {
             .shadow(color: Color(hex: "3b82f6").opacity(0.3), radius: 40, x: 0, y: 0)
             .shadow(color: Color(hex: "3b82f6").opacity(0.2), radius: 60, x: 0, y: 0)
     }
-    
+
     /// Applies subtle glow effect
     func subtleGlow() -> some View {
         self.shadow(color: Color(hex: "3b82f6").opacity(0.4), radius: 20, x: 0, y: 0)
