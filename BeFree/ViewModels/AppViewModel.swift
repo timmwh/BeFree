@@ -81,8 +81,9 @@ class AppViewModel: ObservableObject {
         return idx + 1
     }
 
+    /// Completions on the **active** model's roadmap only (matches phase badges and `allSteps`).
     var completedStepsCount: Int {
-        return userProgress.completedStepIds.count
+        allSteps.filter(\.isCompleted).count
     }
 
     /// Total authored steps across all active phases (excludes Scale, which has no steps in MVP).
