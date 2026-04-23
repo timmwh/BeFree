@@ -131,6 +131,36 @@ private extension DataService {
                 expectedOutput: "One chosen niche with 3 reasons why it's the right fit for you."
             ),
 
+            // Setup (2)
+            Step(
+                id: StepID.aaaPresence,
+                title: "Build a Simple Online Presence",
+                description: "Update your LinkedIn headline to reflect your AAA specialization. Post 1 piece of content about automation. Set up a simple one-page site or Notion page with your offer.",
+                duration: 30,
+                phase: .setup,
+                videoId: PlaceholderVideoID.aaa,
+                watchNotes: [
+                    "Why LinkedIn is the primary channel for B2B services",
+                    "What to include in your first automation-focused post",
+                    "How to build a simple landing page in under 1 hour"
+                ],
+                expectedOutput: "An optimized LinkedIn profile and a published piece of content about automation."
+            ),
+            Step(
+                id: StepID.aaaPortfolio,
+                title: "Create 3 Portfolio Examples",
+                description: "Build 3 real automations using free tiers of Make/n8n/Zapier + OpenAI. Record a short screen demo of each. Add them to your portfolio page.",
+                duration: 45,
+                phase: .setup,
+                videoId: PlaceholderVideoID.aaa,
+                watchNotes: [
+                    "What types of demo automations impress prospects most",
+                    "How to build a working prototype in under 2 hours",
+                    "How to record and present a demo video"
+                ],
+                expectedOutput: "3 working automation demos with screen recordings added to your portfolio."
+            ),
+
             // Position (4)
             Step(
                 id: StepID.aaaAudience,
@@ -187,36 +217,6 @@ private extension DataService {
                     "How to define a clear, deliverable service package"
                 ],
                 expectedOutput: "A defined service package: what's included, how it's delivered, and the starting price."
-            ),
-
-            // Setup (2)
-            Step(
-                id: StepID.aaaPresence,
-                title: "Build a Simple Online Presence",
-                description: "Update your LinkedIn headline to reflect your AAA specialization. Post 1 piece of content about automation. Set up a simple one-page site or Notion page with your offer.",
-                duration: 30,
-                phase: .setup,
-                videoId: PlaceholderVideoID.aaa,
-                watchNotes: [
-                    "Why LinkedIn is the primary channel for B2B services",
-                    "What to include in your first automation-focused post",
-                    "How to build a simple landing page in under 1 hour"
-                ],
-                expectedOutput: "An optimized LinkedIn profile and a published piece of content about automation."
-            ),
-            Step(
-                id: StepID.aaaPortfolio,
-                title: "Create 3 Portfolio Examples",
-                description: "Build 3 real automations using free tiers of Make/n8n/Zapier + OpenAI. Record a short screen demo of each. Add them to your portfolio page.",
-                duration: 45,
-                phase: .setup,
-                videoId: PlaceholderVideoID.aaa,
-                watchNotes: [
-                    "What types of demo automations impress prospects most",
-                    "How to build a working prototype in under 2 hours",
-                    "How to record and present a demo video"
-                ],
-                expectedOutput: "3 working automation demos with screen recordings added to your portfolio."
             ),
 
             // Launch (4) — 2 authored + 2 shared first-real-world-actions
@@ -289,36 +289,6 @@ private extension DataService {
                 expectedOutput: "1 chosen niche + 3 specific high-commission products you could promote."
             ),
 
-            // Position (2)
-            Step(
-                id: StepID.ttsAnalyze,
-                title: "Analyze Top Performing Creators",
-                description: "Search TikTok for your niche + \"TikTok Shop\". Find 5 active creators. Watch their top 3 videos each. Write down the hook formula that appears most frequently.",
-                duration: 25,
-                phase: .position,
-                videoId: PlaceholderVideoID.tikTokShop,
-                watchNotes: [
-                    "What makes the first 3 seconds of a video work (the hook)",
-                    "How top creators show products without being salesy",
-                    "The call-to-action patterns that drive clicks"
-                ],
-                expectedOutput: "5 reference creators saved + the hook formula you'll use for your own videos."
-            ),
-            Step(
-                id: StepID.ttsAlgorithm,
-                title: "Understand the TikTok Algorithm",
-                description: "Review your first video's analytics: watch time %, replays, shares. Identify your weakest metric and plan your next video with the algorithm's signals in mind.",
-                duration: 20,
-                phase: .position,
-                videoId: PlaceholderVideoID.tikTokShop,
-                watchNotes: [
-                    "How TikTok's test-and-expand distribution works",
-                    "Why the first 3 seconds determine everything",
-                    "Which metrics matter most: watch time, replays, shares"
-                ],
-                expectedOutput: "A written analysis of your first video's performance + 1 specific improvement for the next video."
-            ),
-
             // Setup (2)
             Step(
                 id: StepID.ttsAccount,
@@ -347,6 +317,36 @@ private extension DataService {
                     "How to use TikTok's built-in scheduler"
                 ],
                 expectedOutput: "5 pre-recorded videos + a 14-day content calendar with posting schedule."
+            ),
+
+            // Position (2)
+            Step(
+                id: StepID.ttsAnalyze,
+                title: "Analyze Top Performing Creators",
+                description: "Search TikTok for your niche + \"TikTok Shop\". Find 5 active creators. Watch their top 3 videos each. Write down the hook formula that appears most frequently.",
+                duration: 25,
+                phase: .position,
+                videoId: PlaceholderVideoID.tikTokShop,
+                watchNotes: [
+                    "What makes the first 3 seconds of a video work (the hook)",
+                    "How top creators show products without being salesy",
+                    "The call-to-action patterns that drive clicks"
+                ],
+                expectedOutput: "5 reference creators saved + the hook formula you'll use for your own videos."
+            ),
+            Step(
+                id: StepID.ttsAlgorithm,
+                title: "Understand the TikTok Algorithm",
+                description: "Review your first video's analytics: watch time %, replays, shares. Identify your weakest metric and plan your next video with the algorithm's signals in mind.",
+                duration: 20,
+                phase: .position,
+                videoId: PlaceholderVideoID.tikTokShop,
+                watchNotes: [
+                    "How TikTok's test-and-expand distribution works",
+                    "Why the first 3 seconds determine everything",
+                    "Which metrics matter most: watch time, replays, shares"
+                ],
+                expectedOutput: "A written analysis of your first video's performance + 1 specific improvement for the next video."
             ),
 
             // Launch (6) — 4 authored + 2 shared first-real-world-actions
