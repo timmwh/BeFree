@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import UIKit
 
 /// Bottom tab bar per **Figma 2042:3972** (Main Frames V2): Start / Roadmap /
 /// Profile in a floating pill. The system `TabView` is kept for per-tab
@@ -113,29 +112,16 @@ private struct CustomTabBar: View {
             .padding(.horizontal, Theme.TabBar.horizontalPadding)
             .padding(.vertical, Theme.TabBar.verticalPadding)
 
-        let glassShape = RoundedRectangle(cornerRadius: Theme.TabBar.cornerRadius, style: .continuous)
-
-        Group {
-            if reduceTransparency {
-                paddedTabs
-                    .background(barShape.fill(Theme.Colors.cardBackground))
-            } else if #available(iOS 26.0, *) {
-                paddedTabs
-                    .glassEffect(
-                        .clear,
-                        in: glassShape
-                    )
-            } else {
-                paddedTabs
-                    .background {
-                        ZStack {
-                            Color.clear
-                            LiquidGlassBackdropView()
-                        }
-                        .clipShape(barShape)
-                    }
-            }
-        }
+        // Figma 2042:3972: bar fill is rgba(19,19,26,0.08) — a near-transparent tint, no blur.
+        // reduceTransparency gets a slightly more opaque fallback so the bar stays legible.
+        paddedTabs
+            .background(
+                barShape.fill(
+                    reduceTransparency
+                        ? Theme.Colors.cardBackground
+                        : Color(hex: "13131a").opacity(0.08)
+                )
+            )
         .clipShape(barShape)
         .overlay(
             barShape
@@ -258,23 +244,6 @@ private struct CustomTabBar: View {
     }
 }
 
-/// Backdrop blur only (`UIBlurEffect`); no extra `Color` layers — content behind the bar smears like Figma.
-private struct LiquidGlassBackdropView: UIViewRepresentable {
-    @Environment(\.colorScheme) private var colorScheme
-
-    func makeUIView(context: Context) -> UIVisualEffectView {
-        let view = UIVisualEffectView()
-        view.backgroundColor = .clear
-        return view
-    }
-
-    func updateUIView(_ uiView: UIVisualEffectView, context: Context) {
-        let style: UIBlurEffect.Style = colorScheme == .dark
-            ? .systemUltraThinMaterialDark
-            : .systemUltraThinMaterialLight
-        uiView.effect = UIBlurEffect(style: style)
-    }
-}
 
 private extension AppTab {
     static let allTabs: [AppTab] = [.start, .roadmap, .profile]

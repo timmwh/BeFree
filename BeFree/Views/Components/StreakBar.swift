@@ -33,18 +33,7 @@ struct StreakBar: View {
                 dayColumn(index: index)
             }
         }
-        // 8 pt inner padding on all sides so circles never touch the card border.
-        // Column layout is 44 pt wide (see dayColumn), so the today ring (51 pt) has
-        // 8 - 3.5 = 4.5 pt visual clearance — enough to avoid clipping at the corners.
-        .padding(8)
         .frame(maxWidth: .infinity, alignment: .center)
-        .frame(height: Theme.DashboardLayout.streakCardHeight)
-        .background(Theme.Colors.cardBackgroundMuted)
-        .cornerRadius(Theme.DashboardLayout.streakCardCornerRadius)
-        .overlay(
-            RoundedRectangle(cornerRadius: Theme.DashboardLayout.streakCardCornerRadius)
-                .stroke(Theme.Colors.borderOpacity, lineWidth: 0.633)
-        )
     }
 
     // MARK: - Day column
