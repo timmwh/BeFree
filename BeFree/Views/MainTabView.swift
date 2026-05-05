@@ -8,15 +8,15 @@
 import SwiftUI
 import UIKit
 
-/// Bottom tab bar per Figma 2002-1026: 3 tabs (Start / Roadmap / Profile)
-/// inside a liquid-glass pill floating above content. The system `TabView`
-/// is kept so per-tab lifecycle is preserved, but its native bar is hidden
-/// and ours is rendered as a `safeAreaInset` overlay.
+/// Bottom tab bar per **Figma 2042:3972** (Main Frames V2): Start / Roadmap /
+/// Profile in a floating pill. The system `TabView` is kept for per-tab
+/// lifecycle; the native bar is hidden and this bar is a `safeAreaInset`.
 ///
-/// Visibility: pushed destinations (e.g. `StepDetailView`, `ProfileEditView`)
-/// opt out via `.hidesCustomTabBar()`, which flows up through the
-/// `CustomTabBarHiddenKey` preference so the bar only appears on the three
-/// root screens.
+/// **Shell:** Backdrop **blur** only (no local fill) — Figma: fully transparent with blur.
+/// **iOS 26+:** `Glass` `.clear` (no `.tint`). **iOS 17–25:** `UIVisualEffectView` (blur material).
+/// Edge definition: stroke + hairline + light shadow, not a colored pill body.
+///
+/// Pushed screens hide the bar via `.hidesCustomTabBar()` → `CustomTabBarHiddenKey`.
 struct MainTabView: View {
     @EnvironmentObject var viewModel: AppViewModel
     @State private var isTabBarHidden: Bool = false
@@ -45,11 +45,11 @@ struct MainTabView: View {
                 HStack(spacing: 0) {
                     Spacer(minLength: 0)
                     CustomTabBar(selected: $viewModel.selectedTab)
-                        .frame(maxWidth: 393)
+                        .frame(maxWidth: Theme.TabBar.pillOuterWidth)
                     Spacer(minLength: 0)
                 }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 8)
+                .padding(.horizontal, Theme.TabBar.barHorizontalScreenInset)
+                .padding(.bottom, Theme.TabBar.barBottomInset)
                 .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
@@ -68,8 +68,6 @@ struct CustomTabBarHiddenKey: PreferenceKey {
 
 extension View {
     /// Hides the floating custom tab bar while this view is on screen.
-    /// Used by pushed detail screens (StepDetail, ProfileEdit) so the bar
-    /// only appears on the three root tabs.
     func hidesCustomTabBar(_ hidden: Bool = true) -> some View {
         preference(key: CustomTabBarHiddenKey.self, value: hidden)
     }
@@ -79,99 +77,188 @@ extension View {
 
 private struct CustomTabBar: View {
     @Binding var selected: AppTab
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+
+    private var barShape: RoundedRectangle {
+        RoundedRectangle(cornerRadius: Theme.TabBar.cornerRadius, style: .continuous)
+    }
+
+    /// Figma: 57 / 76.092 / 63.024pt columns with ~48.15pt gaps (not full-width flex — fixes oversized active glow).
+    private var tabBarContent: some View {
+        GeometryReader { geo in
+            let innerW = geo.size.width
+            let natural = Theme.TabBar.naturalRowWidth
+            let scale = min(1, innerW / max(natural, 1))
+            HStack(alignment: .center, spacing: Theme.TabBar.columnGap * scale) {
+                ForEach(AppTab.allTabs, id: \.self) { tab in
+                    let colW = Self.pillBaseWidth(for: tab) * scale
+                    tabButton(for: tab, columnWidth: colW, contentScale: scale)
+                }
+            }
+            .frame(maxWidth: .infinity, minHeight: geo.size.height, alignment: .center)
+        }
+        .frame(height: Theme.TabBar.tabRowHeight)
+    }
+
+    private static func pillBaseWidth(for tab: AppTab) -> CGFloat {
+        switch tab {
+        case .start: return Theme.TabBar.selectedPillWidthStart
+        case .roadmap: return Theme.TabBar.selectedPillWidthRoadmap
+        case .profile: return Theme.TabBar.selectedPillWidthProfile
+        }
+    }
 
     var body: some View {
-        HStack(spacing: 0) {
-            ForEach(AppTab.allTabs, id: \.self) { tab in
-                tabButton(for: tab)
-                    .frame(maxWidth: .infinity)
+        let paddedTabs = tabBarContent
+            .padding(.horizontal, Theme.TabBar.horizontalPadding)
+            .padding(.vertical, Theme.TabBar.verticalPadding)
+
+        let glassShape = RoundedRectangle(cornerRadius: Theme.TabBar.cornerRadius, style: .continuous)
+
+        Group {
+            if reduceTransparency {
+                paddedTabs
+                    .background(barShape.fill(Theme.Colors.cardBackground))
+            } else if #available(iOS 26.0, *) {
+                paddedTabs
+                    .glassEffect(
+                        .clear,
+                        in: glassShape
+                    )
+            } else {
+                paddedTabs
+                    .background {
+                        ZStack {
+                            Color.clear
+                            LiquidGlassBackdropView()
+                        }
+                        .clipShape(barShape)
+                    }
             }
         }
-        // Figma: py-[10px] px-[8px]
-        .padding(.horizontal, 8)
-        .padding(.vertical, 10)
-        .background(glassBackground)
-        // Figma: border 1px solid rgba(255,255,255,0.1)
+        .clipShape(barShape)
         .overlay(
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .strokeBorder(Color.white.opacity(0.10), lineWidth: 1)
+            barShape
+                .strokeBorder(
+                    Color.white.opacity(Theme.TabBar.borderWhiteOpacity),
+                    lineWidth: Theme.TabBar.borderLineWidth
+                )
         )
-        // Figma: inset 0 1px 0 rgba(255,255,255,0.04)
         .overlay(alignment: .top) {
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
+            barShape
                 .fill(
                     LinearGradient(
-                        colors: [Color.white.opacity(0.04), Color.clear],
+                        colors: [Color.white.opacity(0.03), Color.clear],
                         startPoint: .top,
-                        endPoint: UnitPoint(x: 0.5, y: 0.06)
+                        endPoint: UnitPoint(x: 0.5, y: 0.04)
                     )
                 )
-                .frame(height: 2)
+                .frame(height: 1)
                 .allowsHitTesting(false)
         }
-        // Figma: 0 8px 24px rgba(0,0,0,0.22)
-        .shadow(color: .black.opacity(0.22), radius: 24, x: 0, y: 8)
+        .compositingGroup()
+        .shadow(
+            color: .black.opacity(Theme.TabBar.outerDropShadowOpacity),
+            radius: Theme.TabBar.outerShadowRadius,
+            x: 0,
+            y: Theme.TabBar.outerShadowY
+        )
     }
 
-    /// Matches Figma tab bar: `background: rgba(30,30,42,0.25)` over a
-    /// strong backdrop blur. Web uses `blur(40px) saturate(1.8)`; iOS maps
-    /// that to `UIBlurEffect` (no public radius/saturation knobs) — we use
-    /// `systemUltraThinMaterialDark` / `Light` so the bar stays glassy and
-    /// content behind reads through the tint.
-    private var glassBackground: some View {
-        ZStack {
-            LiquidGlassBackdropView()
-            Color(hex: "1E1E2A").opacity(0.25)
-        }
-        .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
-    }
-
-    @ViewBuilder
-    private func tabButton(for tab: AppTab) -> some View {
+    private func tabButton(for tab: AppTab, columnWidth: CGFloat, contentScale: CGFloat) -> some View {
         let isSelected = selected == tab
+        let rowH = Theme.TabBar.tabRowHeight * contentScale
 
-        Button {
+        return Button {
             withAnimation(.easeInOut(duration: 0.18)) {
                 selected = tab
             }
         } label: {
-            VStack(spacing: 4) {
-                Image(systemName: tab.icon)
-                    .font(.system(size: 22, weight: .regular))
+            VStack(spacing: Theme.TabBar.iconLabelSpacing) {
+                tabBarIcon(for: tab, scale: contentScale)
                 Text(tab.label)
-                    .font(.system(size: 10, weight: .regular))
+                    .font(Theme.Typography.tabLabel)
+                    .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: true)
             }
             .foregroundColor(isSelected ? Theme.Colors.primaryBlue : Theme.Colors.textSecondary)
-            .padding(.horizontal, 14)
-            .frame(height: 50)
-            .background(selectedPill(isSelected: isSelected))
+            .frame(width: columnWidth, height: rowH, alignment: .center)
+            .background(alignment: .center) {
+                selectedPill(isSelected: isSelected, width: columnWidth, height: rowH, contentScale: contentScale)
+            }
             .contentShape(Rectangle())
         }
-        .buttonStyle(PlainButtonStyle())
+        .buttonStyle(.plain)
         .accessibilityLabel(tab.label)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 
-    /// Selected state pill — hugs the icon+label (matches Figma widths
-    /// Start 63 / Roadmap 84 / Profile 70) and glows in primary blue.
     @ViewBuilder
-    private func selectedPill(isSelected: Bool) -> some View {
+    private func tabBarIcon(for tab: AppTab, scale: CGFloat) -> some View {
+        let side = Theme.TabBar.iconSize * scale
+        switch tab {
+        case .roadmap:
+            Image(systemName: "map")
+                .font(.system(size: side, weight: .light))
+                .symbolRenderingMode(.monochrome)
+                .frame(width: side, height: side)
+        case .start:
+            Image("TabBarIconStart")
+                .renderingMode(.template)
+                .resizable()
+                .scaledToFit()
+                .frame(width: side, height: side)
+        case .profile:
+            Image("TabBarIconProfile")
+                .renderingMode(.template)
+                .resizable()
+                .scaledToFit()
+                .frame(width: side, height: side)
+        }
+    }
+
+    /// Figma 2042:3974 — fixed-size highlight; soft glow (Swift tones down Figma 24@0.3 to reduce bloom).
+    @ViewBuilder
+    private func selectedPill(isSelected: Bool, width: CGFloat, height: CGFloat, contentScale: CGFloat) -> some View {
         if isSelected {
-            ZStack {
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .fill(Theme.Colors.primaryBlue.opacity(0.15))
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .fill(Theme.Colors.primaryBlue.opacity(0.10))
-                    .shadow(color: Theme.Colors.primaryBlue.opacity(0.15),
-                            radius: 20, x: 0, y: 0)
-            }
+            let r = Theme.TabBar.selectedCornerRadius * contentScale
+            // CSS 140.5° clockwise from “up”
+            let start = UnitPoint(x: 0.18, y: 0.12)
+            let end = UnitPoint(x: 0.82, y: 0.88)
+            let fill = LinearGradient(
+                colors: [
+                    Theme.Colors.primaryBlue.opacity(Theme.TabBar.selectedFillPrimaryOpacity),
+                    Theme.Colors.secondaryBlue.opacity(Theme.TabBar.selectedFillSecondaryOpacity)
+                ],
+                startPoint: start,
+                endPoint: end
+            )
+
+            RoundedRectangle(cornerRadius: r, style: .continuous)
+                .fill(fill)
+                .frame(width: width, height: height)
+                .shadow(
+                    color: Theme.Colors.primaryBlue.opacity(Theme.TabBar.selectedGlowOpacity),
+                    radius: Theme.TabBar.selectedGlowRadius * contentScale,
+                    x: 0,
+                    y: 0
+                )
+                .overlay {
+                    RoundedRectangle(cornerRadius: r, style: .continuous)
+                        .strokeBorder(
+                            LinearGradient(
+                                colors: [Color.white.opacity(0.1), Color.white.opacity(0.02)],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            ),
+                            lineWidth: 1
+                        )
+                }
         }
     }
 }
 
-/// UIKit blur behind the rgba tint — closest match to Figma/CSS
-/// `backdrop-filter: blur(40px) saturate(1.8)` (iOS has no public blur radius
-/// or saturation multiplier on `UIBlurEffect`).
+/// Backdrop blur only (`UIBlurEffect`); no extra `Color` layers — content behind the bar smears like Figma.
 private struct LiquidGlassBackdropView: UIViewRepresentable {
     @Environment(\.colorScheme) private var colorScheme
 
@@ -191,15 +278,6 @@ private struct LiquidGlassBackdropView: UIViewRepresentable {
 
 private extension AppTab {
     static let allTabs: [AppTab] = [.start, .roadmap, .profile]
-
-    /// Outlined SF Symbols matching Figma 2002-1026 icon set.
-    var icon: String {
-        switch self {
-        case .start:   return "house"
-        case .roadmap: return "map"
-        case .profile: return "person"
-        }
-    }
 
     var label: String {
         switch self {

@@ -17,6 +17,8 @@ import SwiftUI
 struct ProgressBar: View {
     let progress: Double
     var height: CGFloat = 8
+    /// Figma 2042:3969/3970: subtle horizontal specular on the fill (Dashboard only by default `false` elsewhere).
+    var showSheen: Bool = false
 
     private var clamped: Double {
         min(max(progress, 0), 1)
@@ -24,21 +26,40 @@ struct ProgressBar: View {
 
     var body: some View {
         GeometryReader { geo in
+            let fillW = max(0, geo.size.width * clamped)
             ZStack(alignment: .leading) {
                 Capsule()
                     .fill(Color(hex: "1a1a24"))
                     .frame(height: height)
 
-                Capsule()
-                    .fill(
-                        LinearGradient(
-                            colors: [Theme.Colors.primaryBlue, Theme.Colors.secondaryBlue],
-                            startPoint: .leading,
-                            endPoint: .trailing
+                if fillW > 0 {
+                    Capsule()
+                        .fill(
+                            LinearGradient(
+                                colors: [Theme.Colors.primaryBlue, Theme.Colors.secondaryBlue],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
                         )
-                    )
-                    .frame(width: geo.size.width * clamped, height: height)
-                    .shadow(color: Theme.Colors.primaryBlue.opacity(0.4), radius: 8, x: 0, y: 0)
+                        .frame(width: fillW, height: height)
+                        .overlay {
+                            if showSheen {
+                                LinearGradient(
+                                    colors: [Color.clear, Color.white.opacity(0.3), Color.clear],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                                .blendMode(.overlay)
+                            }
+                        }
+                        .clipShape(Capsule())
+                        .shadow(
+                            color: Theme.Colors.primaryBlue.opacity(0.4),
+                            radius: showSheen ? 10 : 8,
+                            x: 0,
+                            y: 0
+                        )
+                }
             }
         }
         .frame(height: height)

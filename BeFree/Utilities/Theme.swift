@@ -114,6 +114,12 @@ struct Theme {
         /// Large heading (32px) - Used for page titles
         static let heading1 = Font.custom(Inter.regular, size: 32)
 
+        /// Dashboard brand wordmark “BeFree” (Figma 2042:3885 — 30pt Regular, tracking in layout).
+        static let dashboardBrand = Font.custom(Inter.regular, size: 30)
+
+        /// Large percentage in Dashboard progress card (Figma 2042:3965 — 32pt Regular).
+        static let progressPercent = Font.custom(Inter.regular, size: 32)
+
         /// Medium heading (24px) - Used for section titles
         static let heading2 = Font.custom(Inter.regular, size: 24)
 
@@ -134,6 +140,9 @@ struct Theme {
         /// Small text (12px) - Used for badges and tiny labels
         static let small = Font.custom(Inter.regular, size: 12)
         static let smallMedium = Font.custom(Inter.medium, size: 12)
+
+        /// Bottom tab labels (Figma 2042:3972 — Inter 9 / leading 12)
+        static let tabLabel = Font.custom(Inter.regular, size: 9)
 
         // MARK: Onboarding
         static let onboardingLogoMark = Font.custom(Inter.semiBold, size: 44)
@@ -171,6 +180,135 @@ struct Theme {
         static let xl: CGFloat = 20     // Extra large spacing
         static let xxl: CGFloat = 24    // Section spacing
         static let xxxl: CGFloat = 48   // Major section spacing
+    }
+
+    // MARK: - Tab bar (Figma 2042:3971 / 2042:3972 — Main Frames V2)
+    /// Floating pill tab bar; values from Dev Mode export (node `2042:3972` inner layout).
+    struct TabBar {
+        static let cornerRadius: CGFloat = 24
+        static let selectedCornerRadius: CGFloat = 18
+        /// Insets of icon+label+highlight stack inside the pill.
+        static let horizontalPadding: CGFloat = 8
+        /// Figma: ~8 top, ~9.2 bottom in a 64.23pt-tall bar; average ≈8.
+        static let verticalPadding: CGFloat = 8
+        static let borderLineWidth: CGFloat = 0.633
+        /// Slightly stronger than 0.08 so the bar edge reads when the fill matches the screen.
+        static let borderWhiteOpacity: CGFloat = 0.10
+        static let outerShadowRadius: CGFloat = 32
+        static let outerShadowY: CGFloat = 8
+        static let outerDropShadowOpacity: CGFloat = 0.18
+        static let iconSize: CGFloat = 20
+        /// Icon baseline → label (Figma ~2.5pt from icon bottom to `top-[28.98]`)
+        static let iconLabelSpacing: CGFloat = 2.5
+        /// Button row / selected pill height in spec.
+        static let tabRowHeight: CGFloat = 46.979
+        /// Outer width of the bar container in Figma (w-[353.811]).
+        static let pillOuterWidth: CGFloat = 353.811
+        /// Gaps between fixed-width tab columns (Figma: ~48.15 between adjacent highlights).
+        static let columnGap: CGFloat = 48.15
+        /// Sum of three pill widths + two gaps (used to scale when inner width is tight).
+        static var naturalRowWidth: CGFloat {
+            selectedPillWidthStart + columnGap + selectedPillWidthRoadmap + columnGap + selectedPillWidthProfile
+        }
+        /// Figma: selected highlight widths (Start, Roadmap, Profile) — not full flex column width.
+        static let selectedPillWidthStart: CGFloat = 57
+        static let selectedPillWidthRoadmap: CGFloat = 76.092
+        static let selectedPillWidthProfile: CGFloat = 63.024
+        /// Selected state outer glow (Figma `0 0 24` @ 0.3) — use slightly lower radius/opacity in Swift to avoid bloom.
+        static let selectedGlowRadius: CGFloat = 14
+        static let selectedGlowOpacity: Double = 0.15
+        static let selectedFillPrimaryOpacity: CGFloat = 0.12
+        static let selectedFillSecondaryOpacity: CGFloat = 0.07
+        /// Screen insets for the whole floating bar (Tab section `px-20` in 2042:3971).
+        static let barHorizontalScreenInset: CGFloat = 20
+        /// Sits the pill closer to the home indicator; tune vs Figma frame 2042:3869.
+        static let barBottomInset: CGFloat = -22   // safe_area(≈34) + (-22) = 12 pt visible gap
+        /// Shell is **blur only** in code (Figma: transparent + backdrop blur); no separate fill.
+        /// Total scroll clearance under floating bar (bar + screen insets + safe home).
+        static let bottomClearanceTotal: CGFloat = 68
+    }
+
+    // MARK: - Dashboard Layout
+    // Figma `2042:3869` (Dashboard / Main) + `2042:3874` (padded content container, Dev Mode).
+    // Fractions rounded up to whole points (e.g. 15.996 → 16, 31.992 → 32, 101.239 → 102).
+    // Dynamic Type may reflow; sizes match Figma at the default size class.
+    struct DashboardLayout {
+        // Screen edges (2042:3874)
+        static let horizontalInset: CGFloat = 16
+        static let topInset: CGFloat = 15
+        static let sectionSpacing: CGFloat = 32
+        static let sectionHeaderSpacing: CGFloat = 12
+
+        // Brand + streak pill (2042:3875–3886)
+        static let logoToWordmarkGap: CGFloat = 12
+        static let beFreeTitleTracking: CGFloat = -0.31
+        static let streakPillHeight: CGFloat = 42
+        static let streakPillHorizontalPadding: CGFloat = 17
+        static let streakPillVerticalPadding: CGFloat = 9
+        static let streakPillIconToNumberGap: CGFloat = 8
+
+        // Streak row (2042:3891)
+        static let streakCardHeight: CGFloat = 102
+        static let streakCardCornerRadius: CGFloat = 16
+        static let streakColumnSpacing: CGFloat = 12
+        static let streakDayLabelSpacing: CGFloat = 8
+        static let streakInnerPadding: CGFloat = 17
+        static let streakCircleSize: CGFloat = 44
+        static let streakTodayRingSize: CGFloat = 51
+        static let streakTodayRingBorder: CGFloat = 2.2
+        static let streakTodayInnerDot: CGFloat = 15
+        static let streakTodayRingShadow: CGFloat = 9
+
+        // Next step card (2042:3933, 2042:3938–43)
+        static let nextStepTitleToBody: CGFloat = 12
+        /// Figma 2042:3942 body: ~26px line on 16pt — extra space between wrapped lines.
+        static let nextStepBodyLineExtra: CGFloat = 6
+        static let nextStepLabelIconSize: CGFloat = 16
+        static let nextStepLabelIconGap: CGFloat = 8
+
+        // Progress (2042:3949, 2042:3963–70)
+        static let progressHeaderHorizontalInset: CGFloat = 4
+        static let progressPercentToBarSpacing: CGFloat = 16
+        static let progressBarToCaptionSpacing: CGFloat = 12
+        static let progressBarHeight: CGFloat = 12
+        static let progressPercentLineHeight: CGFloat = 48
+        static let progressPercentTracking: CGFloat = 0.41
+        static let roadmapRowChevronSize: CGFloat = 12
+
+        static let cardInnerPadding: CGFloat = 24
+        static let ctaHeight: CGFloat = 56
+
+        // Section label — both headers (Figma: Next Step + Progress ~0.55, Roadmap “chevron” row)
+        static let sectionLabelIconSize: CGFloat = 16
+        static let sectionLabelIconGap: CGFloat = 8
+        static let sectionLabelTracking: CGFloat = 0.55
+
+        // ── Rebuild tokens (Dashboard v2) ──────────────────────────────────────────────────────
+
+        /// Negative horizontal padding applied to the streak card to bleed edge-to-edge (Figma left:-16).
+        static let streakEdgeBleed: CGFloat = -16
+
+        /// Minimum height for the Next Step card; grows for long content or large Dynamic Type.
+        static let nextStepCardMinHeight: CGFloat = 252
+
+        /// Minimum height for the progress card.
+        static let progressCardMinHeight: CGFloat = 158
+
+        // Next Step card decorative bokeh dots (Figma 2042:3935–3937).
+        // Positions are (x, y) offsets from the card's top-leading corner.
+        static let bokeh1X: CGFloat = 108
+        static let bokeh1Y: CGFloat = 48
+        static let bokeh1Size: CGFloat = 8
+        static let bokeh1Opacity: CGFloat = 0.31
+        static let bokeh2X: CGFloat = 180
+        static let bokeh2Y: CGFloat = 81
+        static let bokeh2Size: CGFloat = 9          // 8.514 → 9
+        static let bokeh2Opacity: CGFloat = 0.35
+        static let bokeh3X: CGFloat = 252
+        static let bokeh3Y: CGFloat = 124
+        static let bokeh3Size: CGFloat = 8
+        static let bokeh3Opacity: CGFloat = 0.30
+        static let bokehBlur: CGFloat = 8
     }
 
     // MARK: - Corner Radius
