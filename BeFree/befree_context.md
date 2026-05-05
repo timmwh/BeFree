@@ -92,7 +92,7 @@ This is the product advantage — the thing a ChatGPT window will never do well.
 - Fast feedback loop (Mark Done → streak increases → success animation)
 - Low overwhelm — nothing extra on screen
 - Visible progress and momentum
-- Consistency mechanics (streak, daily return, later: widgets + notifications)
+- Consistency mechanics (streak, daily return, widgets, notifications)
 
 If BeFree nails only Layer 3, it still wins against "just use ChatGPT."
 
@@ -134,7 +134,7 @@ MVP keeps this distinction strict. Anything that isn't in "user-specific" stays 
 
 Every business model in BeFree is expressed as a set of **authored steps** that each belong to one phase in the spine. A step is always:
 
-- One curated YouTube video (embedded in-app via `WKWebView` — no external app switching)
+- One curated YouTube video (played in-app — no external app switching)
 - **While watching** — required bullets: what to focus on in the video for this task
 - One direct action task derived from the video
 - One expected output: what the user will have produced by the end
@@ -142,6 +142,8 @@ Every business model in BeFree is expressed as a set of **authored steps** that 
 The spine guarantees the user experience feels consistent across models; the authored content guarantees quality; the personalization layer makes it feel like *their* plan.
 
 **A note on the Iterate phase.** Iterate is part of the spine because every real business journey has one — but in the MVP it is intentionally thin. Iterate is represented through **step completion, coach reflection, and roadmap continuity** (the roadmap keeps giving the user the next reasonable step after Launch), **not** through a fully adaptive feedback engine that rewrites the plan based on outcomes. A real adaptive Iterate layer (performance-based branching, dynamic unlocking, re-engagement logic) is a V2.0 decision, deliberately not an MVP one.
+
+*The two examples below are illustrative; authored content evolves and is not a contract of this doc.*
 
 Example — Foundation phase, AAA:
 - VIDEO: "How to Profile Your Ideal AAA Client" — 15 min
@@ -201,50 +203,47 @@ That is deliberate. No free-form AI roadmap generation. No AI inventing steps, v
 
 **Dashboard**
 
-- Greeting
-- Streak bar (7 days)
-- "Next Step" card with one-tap Start
-
-Minimal by design. The next action is always the most prominent element on screen.
+Surfaces a greeting, current streak status, and — most prominently — the one next step the user should start now. The next action is always the most prominent element on screen.
 
 **Step Detail Screen**
 
-- Phase chip (Foundation / Setup / …) + Step title
-- Embedded YouTube video (`WKWebView`, full-width, plays in-app)
-- **While watching** — required focus bullets
-- Task description (what to do after / alongside the video)
-- Expected output ("By the end of this step you will have: [X]")
-- "Ask your coach" button (AI coach, context-aware)
-- "Mark as Done" — no confirmation, instant completion, success animation
-
-No timer. No subtask checklist. No extra resource links. One video, one watch guide, one task, one completion action.
+Shows the current step (phase, title, in-app video, "while watching" focus bullets, task, expected output) and offers two actions: "Ask your coach" and "Mark as Done". Mark as Done is instant (no confirmation) with positive feedback. One video, one watch guide, one task, one completion action — no timer, no subtask checklist, no extra resource links.
 
 **AI Step Coach**
 
-- Accessible via "Ask your coach" on the Step Detail screen
-- Opens a bottom sheet chat interface
+- Accessible from the Step Detail screen
 - Context-aware: current step, task text, business model, and user onboarding profile {richer grounding in video/transcript is a later improvement}
-- Powered by OpenAI Chat Completions API (direct from app, no backend required in MVP)
+- Powered by an LLM provider; no backend required in MVP
 - Responses: concise, actionable, encouraging
 
 **Roadmap Screen**
 
-- Phase-grouped view of all steps with completion state
-- Later spine phases (later Iterate content, additional models) shown but locked — "coming soon"
-- {Results Timeline milestones — TBD}
+Phase-grouped view of all steps with completion state. Later spine content and additional models appear locked ("coming soon"). {Results Timeline milestones — TBD.}
 
 **Settings**
 
 - View and switch business model (TikTok Shop ↔ AAA)
 - Reset progress (with confirmation)
 
-**Persistence (UserDefaults)**
+**Persistence**
+
+What is persisted (storage mechanism is an implementation choice):
 
 - Selected business model
 - Completed steps
 - Streak + streak days
 - Onboarding profile (experience + goal) — used by the personalization layer
-- Notification preference — when notifications ship
+- Notification preference
+
+**Push & Widgets**
+
+- Daily re-engagement push reminding the user to open BeFree and execute today's next step. Permission flow, timing, and copy are product decisions that can iterate.
+- Home-screen widget surfacing the next step (and/or streak) as a passive entry point; tapping it deep-links into the Step Detail screen.
+
+**Monetization**
+
+- **Hard paywall** as the default state after a defined entry point in the flow {exact placement — after onboarding vs. after first Step — to be decided before launch}.
+- {Optional launch offer: free for the first X users, then paid — exact X and gating mechanism TBD.}
 
 ### ❌ Not in MVP
 
@@ -261,8 +260,6 @@ These belong to later versions and should be resisted during MVP work:
 - Agentic backend workflows
 - Calendar sync
 - Weekly analytics dashboard
-- Monetization system (to be defined post-MVP-core)
-- Push notifications + widgets (to build right after MVP core)
 
 ---
 
@@ -272,9 +269,10 @@ These belong to later versions and should be resisted during MVP work:
 2. See today's next step
 3. Watch the curated video in-app
 4. Do the one task it describes
-5. Mark as Done — success animation
+5. Mark as Done — instant completion with positive feedback
 6. Streak increases
-7. Notification tomorrow — when implemented: "Come back. 15 minutes. Your next step is ready."
+7. Notification tomorrow nudges the user back into the next step
+8. The home-screen widget keeps the next step visible between sessions
 
 Everything else is secondary.
 
@@ -360,24 +358,7 @@ BeFree **is not**:
 
 ## 12. Figma Reference
 
-This project uses the following Figma file as reference for all screens and components:
+Figma is the source of truth for screens, components, and visual design. Frame URLs change frequently and are intentionally not listed here.
 
 **File URL:**  
-https://www.figma.com/design/OY0TNQAcozeiRogwr7IB5x/BeFree-Main-Frames?node-id=0-1&t=WXKPLdaMX55M2rj5-1
-
-### Frame URLs
-
-**Onboarding / PerfectMatch**  
-https://www.figma.com/design/OY0TNQAcozeiRogwr7IB5x/BeFree-Main-Frames?node-id=11-2013&t=WXKPLdaMX55M2rj5-1
-
-**Dashboard / Main**  
-https://www.figma.com/design/OY0TNQAcozeiRogwr7IB5x/BeFree-Main-Frames?node-id=11-2111&t=WXKPLdaMX55M2rj5-1
-
-**StepDetail / Base**  
-https://www.figma.com/design/OY0TNQAcozeiRogwr7IB5x/BeFree-Main-Frames?node-id=14-3720&t=WXKPLdaMX55M2rj5-1
-
-**Roadmap / Main**  
-https://www.figma.com/design/OY0TNQAcozeiRogwr7IB5x/BeFree-Main-Frames?node-id=11-2823&t=WXKPLdaMX55M2rj5-1
-
-**ComponentsScreen**  
-https://www.figma.com/design/OY0TNQAcozeiRogwr7IB5x/BeFree-Main-Frames?node-id=25-4520&t=WXKPLdaMX55M2rj5-1
+https://www.figma.com/design/lfZO2Z2U2xrX5G3QqeUpn2/BeFree-Main-Frames-V2?node-id=0-1&t=pencwqQudlzrbnlj-1
